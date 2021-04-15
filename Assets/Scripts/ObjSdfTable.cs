@@ -10,7 +10,7 @@ public class ObjSdfTable
     public float[,,] objsdf;
     public float step;
 
-    //general
+    //General SDF for preloaded objects
     public ObjSdfTable(float Lenght, float width, float height, float[,,] objsdf)
     {
         this.Lenght = Lenght;
@@ -19,7 +19,7 @@ public class ObjSdfTable
         this.objsdf = objsdf;
     }
 
-    //spere
+    //Calculate the SDF of the circle using implicit functions
     public ObjSdfTable(float Lenght, float width, float height, float r)
     {
         this.Lenght = Lenght;
@@ -28,6 +28,7 @@ public class ObjSdfTable
         ComputeSphereSdf(r);
     }
 
+    //origin point of sphere is (0,0,0)
     public void ComputeSphereSdf(float r)
     {
         float tmp = 1 / step;

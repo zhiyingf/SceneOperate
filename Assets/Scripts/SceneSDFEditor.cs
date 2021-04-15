@@ -8,17 +8,17 @@ public class SceneSDFEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        SceneSDF scensdf = target as SceneSDF;
+        SceneSDF scenesdf = target as SceneSDF;
         GUILayout.Space(8.0f);
-        scensdf.name = EditorGUILayout.TextField("Name", scensdf.name);
-        scensdf.operationType = (BooleanType)EditorGUILayout.EnumPopup("Operation", scensdf.operationType);
-        scensdf.operationA = (Transform)EditorGUILayout.ObjectField("OperandA", scensdf.operationA, typeof(Transform), true);
+        scenesdf.name = EditorGUILayout.TextField("Name", scenesdf.name);
+        scenesdf.operationType = (BooleanType)EditorGUILayout.EnumPopup("Operation", scenesdf.operationType);
+        scenesdf.operationA = (Transform)EditorGUILayout.ObjectField("OperandA", scenesdf.operationA, typeof(Transform), true);
 
         GUILayout.Space(8.0f);
 
         if (GUILayout.Button("UpdateMesh"))
         {
-            scensdf.ExecuteOnClick();
+            scenesdf.ExecuteOnClick();
         }
 
         if (GUI.changed)
