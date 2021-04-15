@@ -57,7 +57,7 @@ public class MarchingCubes : Marching
     }
 
 
-	////////////////////////////////////////////////
+	
 	/// <summary>
 	/// EdgeConnection lists the index of the endpoint vertices for each 
 	/// of the 12 edges of the cube.

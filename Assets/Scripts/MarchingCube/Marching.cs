@@ -14,6 +14,9 @@ public abstract class Marching : IMarching
 
     private float[] Cube { get; set; }
 
+    /// <summary>
+    /// Winding order of triangles use 2,1,0 or 0,1,2
+    /// </summary>
     protected int[] WindingOrder { get; private set; }
 
     protected Vector3 StepSize { get; private set; }
@@ -74,16 +77,28 @@ public abstract class Marching : IMarching
         }
     }
 
-
+    /// <summary>
+    /// MarchCube performs the Marching algorithm on a single cube
+    /// mcPoint is cube the first point:vertex0
+    /// </summary>
     protected abstract void March(Vector3 mcPoint, float[] cube, IList<Vector3> vertList, IList<int> indexList);
 
-
+    /// <summary>
+    /// GetOffset finds the approximate point of intersection of the surface
+    /// between two points with the values v1 and v2
+    /// </summary>
     protected virtual float GetOffset(float v1, float v2)
     {
         float delta = v2 - v1;
         return (delta == 0.0f) ? Surface : (Surface - v1) / delta;
     }
 
+
+    /// <summary>
+    /// VertexOffset lists the positions, relative to vertex0, 
+    /// of each of the 8 vertices of a cube.
+    /// vertexOffset[8][3]
+    /// </summary>
     protected static readonly int[,] VertexOffset = new int[,]
     {
             {0, 0, 0},{1, 0, 0},{1, 1, 0},{0, 1, 0},
