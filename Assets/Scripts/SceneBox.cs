@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 //manage scene box
@@ -34,21 +35,33 @@ public class SceneBox
     public void UpdateSDF(Transform obj, ObjSdfTable sdfObj)
     {//加第一个物体 只有平移
         Vector3 pos = obj.position;
-        pos = new Vector3(Mathf.Round(pos.x - sdfObj.width / 2.0f), Mathf.Round(pos.y - sdfObj.height / 2.0f), Mathf.Round(pos.z - sdfObj.Lenght / 2.0f));
+        pos = new Vector3(pos.x - sdfObj.width / 2.0f, pos.y - sdfObj.height / 2.0f, pos.z - sdfObj.Lenght / 2.0f);
         Vector3 posBegin = (pos - sceneBox.min) / sdfObj.step;
+        posBegin = new Vector3(Mathf.Round(posBegin.x), Mathf.Round(posBegin.y), Mathf.Round(posBegin.z));
         Vector3 posEnd = new Vector3(sdfObj.width / sdfObj.step, sdfObj.height / sdfObj.step, sdfObj.Lenght / sdfObj.step);
         posEnd += posBegin;
-        int ii = 0, jj = 0, kk = 0;
-        for (int i = (int)posBegin.x; i < (int)posEnd.x; i++, ii++)
+
+        for (int i = (int)posBegin.x; i < (int)posEnd.x; i++)
         {
-            for (int j = (int)posBegin.y; i < (int)posEnd.y; j++, jj++)
+            for (int j = (int)posBegin.y; j < (int)posEnd.y; j++)
             {
-                for (int k = (int)posBegin.z; i < (int)posEnd.z; k++, kk++)
+                for (int k = (int)posBegin.z; k < (int)posEnd.z; k++)
                 {
-                    boxMatrix[i, j, k] = sdfObj.objsdf[ii, jj, kk];
+                    boxMatrix[i, j, k] = sdfObj.objsdf[i - (int)posBegin.x, j - (int)posBegin.y, k - (int)posBegin.z];
                 }
             }
         }
+
+        //for(int i = 0; i < 10; i++)
+        //{
+        //    for(int j = 0; j < 10; j++)
+        //    {
+        //        for(int k = 0; k < 10; k++)
+        //        {
+        //            boxMatrix[i, j, k] = sdfObj.objsdf[i, j, k];
+        //        }
+        //    }
+        //}
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 //main scene
@@ -97,6 +98,18 @@ public class SceneSDF : MonoBehaviour
     {
         SB.UpdateSDF(operationA, objsdf);
 
+        print(operationA.position);
+        Vector3 pos = operationA.position;
+        pos = new Vector3(pos.x - objsdf.width / 2.0f, pos.y - objsdf.height / 2.0f, pos.z - objsdf.Lenght / 2.0f);
+        Vector3 posBegin = (pos - SB.sceneBox.min) / objsdf.step;
+        posBegin = new Vector3(Mathf.Round(posBegin.x), Mathf.Round(posBegin.y), Mathf.Round(posBegin.z));
+        Vector3 posEnd = new Vector3(objsdf.width / objsdf.step, objsdf.height / objsdf.step, objsdf.Lenght / objsdf.step);
+        posEnd += posBegin;
+
+        print(posBegin);
+        print(posEnd);
+        //NumToString(objsdf.objsdf, "objsdf.txt");
+
         Vector3 mcMin = SB.sceneBox.min;
         Vector3 mcMax = SB.sceneBox.max;
         Vector3Int ncells = new Vector3Int((int)(SB.size.x / Constants.Step), (int)(SB.size.y / Constants.Step), (int)(SB.size.z / Constants.Step));
@@ -104,6 +117,35 @@ public class SceneSDF : MonoBehaviour
         mc.ComputeMC();
 
         GetComponent<MeshFilter>().mesh = mc.mesh;
+        //print(NumToString(SB.boxMatrix));
+        //NumToString(SB.boxMatrix, "boxMatrix.txt");
+    }
+
+    //把每一个数取出来转化为字符串
+    public void NumToString(float[,,] list, string fileName)
+    {
+        string str = "";
+        //foreach (float n in list)
+        //    str += n.ToString() + " ";
+        for(int i = 0; i < 100; i++)
+        {
+            for(int j = 0;j < 100; j++)
+            {
+                for(int k = 0;k < 100; k++)
+                {
+                    str += list[i,j,k].ToString() + " ";
+                }
+            }
+        }
+
+        string pathout = "E:\\Users\\zhiyi\\SceneOperate\\"+fileName;
+
+        StreamWriter sw = new StreamWriter(pathout, true);
+        sw.WriteLine(str);
+        sw.Close();
+        sw.Dispose();
+
+        //return str;
     }
 
 }

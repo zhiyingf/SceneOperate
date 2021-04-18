@@ -8,7 +8,7 @@ public class ObjSdfTable
     public float width;
     public float height;
     public float[,,] objsdf;
-    public float step;
+    public float step = 0.1f;
 
     //General SDF for preloaded objects
     public ObjSdfTable(float Lenght, float width, float height, float[,,] objsdf)
@@ -25,6 +25,7 @@ public class ObjSdfTable
         this.Lenght = Lenght;
         this.width = width;
         this.height = height;
+        this.objsdf = new float[10, 10, 10];
         ComputeSphereSdf(r);
     }
 
@@ -32,13 +33,13 @@ public class ObjSdfTable
     public void ComputeSphereSdf(float r)
     {
         float tmp = 1 / step;
-        for (int i = 0; i <= (int)tmp * width; i++)
+        for (int i = 0; i < (int)tmp * width; i++)
         {
             float vx = step * i;
-            for (int j = 0; j <= (int)tmp * height; j++)
+            for (int j = 0; j < (int)tmp * height; j++)
             {
                 float vy = step * j;
-                for (int k = 0; k <= (int)tmp * Lenght; k++)
+                for (int k = 0; k < (int)tmp * Lenght; k++)
                 {
                     float vz = step * k;
                     Vector3 v3 = new Vector3(vx, vy, vz);
