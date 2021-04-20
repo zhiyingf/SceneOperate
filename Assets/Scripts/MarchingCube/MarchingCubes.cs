@@ -11,14 +11,14 @@ public class MarchingCubes : Marching
         EdgeVertex = new Vector3[12];
     }
 
-    protected override void March(Vector3 mcPoint, float[] cube, IList<Vector3> vertList, IList<int> indexList)
+    protected override void March(Vector4[] cube, IList<Vector3> vertList, IList<int> indexList)
     {
         int i, j, vert, idx;
         int cubeIndex = 0;
-        float offset;
+        
 
         //Find which vertices are inside of the surface and which are outside
-        for (i = 0; i < 8; i++) if (cube[i] <= Surface) cubeIndex |= 1 << i;
+        for (i = 0; i < 8; i++) if (cube[i].w <= Surface) cubeIndex |= 1 << i;
 
 		//Find which edges are intersected by the surface
 		int edgeFlag = EdgeTable[cubeIndex];
@@ -29,14 +29,10 @@ public class MarchingCubes : Marching
 		//Find the point of intersection of the surface with each edge
 		for (i = 0; i < 12; i++)
         {
-			//if there is an intersection on this edge
-			if ((edgeFlag & (1 << i)) != 0)
-			{
-				offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
-
-				EdgeVertex[i].x = mcPoint.x + (StepSize.x * VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
-				EdgeVertex[i].y = mcPoint.y + (StepSize.y * VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
-				EdgeVertex[i].z = mcPoint.z + (StepSize.z * VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
+            //if there is an intersection on this edge
+            if ((edgeFlag & (1 << i)) != 0)
+            {
+				EdgeVertex[i] = LinearInterp(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]], Surface);
 			}
 		}
 
@@ -57,42 +53,42 @@ public class MarchingCubes : Marching
     }
 
 
-	
-	/// <summary>
-	/// EdgeConnection lists the index of the endpoint vertices for each 
-	/// of the 12 edges of the cube.
-	/// edgeConnection[12][2]
-	/// </summary>
-	private static readonly int[,] EdgeConnection = new int[,]
-	{
-			{0,1}, {1,2}, {2,3}, {3,0},
-			{4,5}, {5,6}, {6,7}, {7,4},
-			{0,4}, {1,5}, {2,6}, {3,7}
-	};
 
-	/// <summary>
-	/// edgeDirection lists the direction vector (vertex1-vertex0) for each edge in the cube.
-	/// edgeDirection[12][3]
-	/// </summary>
-	private static readonly float[,] EdgeDirection = new float[,]
-	{
-			{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
-			{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
-			{0.0f, 0.0f, 1.0f},{0.0f, 0.0f, 1.0f},{ 0.0f, 0.0f, 1.0f},{0.0f,  0.0f, 1.0f}
-	};
+    /// <summary>
+    /// EdgeConnection lists the index of the endpoint vertices for each 
+    /// of the 12 edges of the cube.
+    /// edgeConnection[12][2]
+    /// </summary>
+    private static readonly int[,] EdgeConnection = new int[,]
+    {
+            {0,1}, {1,2}, {2,3}, {3,0},
+            {4,5}, {5,6}, {6,7}, {7,4},
+            {0,4}, {1,5}, {2,6}, {3,7}
+    };
 
-	/// <summary>
-	/// For any edge, if one vertex is inside of the surface and the other 
-	/// is outside of the surface then the edge intersects the surface.
-	/// For each of the 8 vertices of the cube can be two possible states,
-	/// either inside or outside of the surface.
-	/// For any cube the are 2^8=256 possible sets of vertex states.
-	/// This table lists the edges intersected by the surface for all 256 
-	/// possible vertex states. There are 12 edges.  
-	/// For each entry in the table, if edge #n is intersected, then bit #n is set to 1.
-	/// cubeEdgeFlags[256]
-	/// </summary>
-	private static readonly int[] EdgeTable = new int[]
+    /// <summary>
+    /// edgeDirection lists the direction vector (vertex1-vertex0) for each edge in the cube.
+    /// edgeDirection[12][3]
+    /// </summary>
+    //private static readonly float[,] EdgeDirection = new float[,]
+    //{
+    //		{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
+    //		{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
+    //		{0.0f, 0.0f, 1.0f},{0.0f, 0.0f, 1.0f},{ 0.0f, 0.0f, 1.0f},{0.0f,  0.0f, 1.0f}
+    //};
+
+    /// <summary>
+    /// For any edge, if one vertex is inside of the surface and the other 
+    /// is outside of the surface then the edge intersects the surface.
+    /// For each of the 8 vertices of the cube can be two possible states,
+    /// either inside or outside of the surface.
+    /// For any cube the are 2^8=256 possible sets of vertex states.
+    /// This table lists the edges intersected by the surface for all 256 
+    /// possible vertex states. There are 12 edges.  
+    /// For each entry in the table, if edge #n is intersected, then bit #n is set to 1.
+    /// cubeEdgeFlags[256]
+    /// </summary>
+    private static readonly int[] EdgeTable = new int[]
 		{
 		0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c, 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
 		0x190, 0x099, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c, 0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,

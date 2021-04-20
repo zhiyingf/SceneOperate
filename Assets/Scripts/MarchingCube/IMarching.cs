@@ -30,5 +30,5 @@ public interface IMarching
     /// <param name="voxels">the cube value</param>
     /// <param name="verts">vertex point of triangle mesh</param>
     /// <param name="indices">indices of the vertex</param>
-    void Generate(IList<float> voxels, IList<Vector3> verts, IList<int> indices);
+    void Generate(IList<Vector4> voxels, IList<Vector3> verts, IList<int> indices);
 }

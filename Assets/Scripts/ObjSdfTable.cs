@@ -4,46 +4,51 @@ using UnityEngine;
 
 public class ObjSdfTable
 {
+    public float Width;
+    public float Height;
     public float Lenght;
-    public float width;
-    public float height;
-    public float[,,] objsdf;
-    public float step = 0.1f;
+    public float Step = 0.1f;
+    public Vector3Int Ncells;
+    public float[,,] Objsdf;
+
 
     //General SDF for preloaded objects
-    public ObjSdfTable(float Lenght, float width, float height, float[,,] objsdf)
+    public ObjSdfTable(float width, float height, float lenght, float[,,] objsdf)
     {
-        this.Lenght = Lenght;
-        this.width = width;
-        this.height = height;
-        this.objsdf = objsdf;
+        Lenght = lenght;
+        Width = width;
+        Height = height;
+        Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
+        Objsdf = objsdf;
     }
 
     //Calculate the SDF of the circle using implicit functions
-    public ObjSdfTable(float Lenght, float width, float height, float r)
+    public ObjSdfTable(float width, float height, float lenght, float r)
     {
-        this.Lenght = Lenght;
-        this.width = width;
-        this.height = height;
-        this.objsdf = new float[10, 10, 10];
+        Lenght = lenght;
+        Width = width;
+        Height = height;
+        Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
+        Objsdf = new float[Ncells.x+1, Ncells.y+1, Ncells.z+1];
         ComputeSphereSdf(r);
     }
 
     //origin point of sphere is (0,0,0)
     public void ComputeSphereSdf(float r)
     {
-        float tmp = 1 / step;
-        for (int i = 0; i < (int)tmp * width; i++)
+        Vector3 origin = new Vector3(-0.5f, -0.5f, -0.5f);
+        for (int i = 0; i <= Ncells.x; i++)
         {
-            float vx = step * i;
-            for (int j = 0; j < (int)tmp * height; j++)
+            float vx = Step * i;
+            for (int j = 0; j <= Ncells.y; j++)
             {
-                float vy = step * j;
-                for (int k = 0; k < (int)tmp * Lenght; k++)
+                float vy = Step * j;
+                for (int k = 0; k <= Ncells.z; k++)
                 {
-                    float vz = step * k;
+                    float vz = Step * k;
                     Vector3 v3 = new Vector3(vx, vy, vz);
-                    objsdf[i, j, k] = v3.magnitude - r;
+                    v3 += origin;
+                    Objsdf[i, j, k] = v3.magnitude - r/2;
                 }
             }
         }

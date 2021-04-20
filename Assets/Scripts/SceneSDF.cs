@@ -98,25 +98,22 @@ public class SceneSDF : MonoBehaviour
     {
         SB.UpdateSDF(operationA, objsdf);
 
-        print(operationA.position);
         Vector3 pos = operationA.position;
-        pos = new Vector3(pos.x - objsdf.width / 2.0f, pos.y - objsdf.height / 2.0f, pos.z - objsdf.Lenght / 2.0f);
-        Vector3 posBegin = (pos - SB.sceneBox.min) / objsdf.step;
-        posBegin = new Vector3(Mathf.Round(posBegin.x), Mathf.Round(posBegin.y), Mathf.Round(posBegin.z));
-        Vector3 posEnd = new Vector3(objsdf.width / objsdf.step, objsdf.height / objsdf.step, objsdf.Lenght / objsdf.step);
-        posEnd += posBegin;
+        pos = new Vector3(pos.x - objsdf.Width / 2.0f, pos.y - objsdf.Height / 2.0f, pos.z - objsdf.Lenght / 2.0f);
+        pos = (pos - SB.sceneBox.min) / objsdf.Step;
+        Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        Vector3Int posEnd = objsdf.Ncells + posBegin;
 
         print(posBegin);
         print(posEnd);
-        //NumToString(objsdf.objsdf, "objsdf.txt");
+        NumToString(objsdf.Objsdf, "objsdf.txt");
 
-        Vector3 mcMin = SB.sceneBox.min;
-        Vector3 mcMax = SB.sceneBox.max;
-        Vector3Int ncells = new Vector3Int((int)(SB.size.x / Constants.Step), (int)(SB.size.y / Constants.Step), (int)(SB.size.z / Constants.Step));
-        UseMC mc = new UseMC(ncells, mcMin, mcMax, SB.boxMatrix);
+        UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
+
         mc.ComputeMC();
 
         GetComponent<MeshFilter>().mesh = mc.mesh;
+
         //print(NumToString(SB.boxMatrix));
         //NumToString(SB.boxMatrix, "boxMatrix.txt");
     }
@@ -127,11 +124,11 @@ public class SceneSDF : MonoBehaviour
         string str = "";
         //foreach (float n in list)
         //    str += n.ToString() + " ";
-        for(int i = 0; i < 100; i++)
+        for(int i = 0; i <= 10; i++)
         {
-            for(int j = 0;j < 100; j++)
+            for(int j = 0;j <= 10; j++)
             {
-                for(int k = 0;k < 100; k++)
+                for(int k = 0;k <= 10; k++)
                 {
                     str += list[i,j,k].ToString() + " ";
                 }
