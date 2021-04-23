@@ -96,22 +96,15 @@ public class SceneSDF : MonoBehaviour
     //marching cube
     public void UpdateMesh()
     {
+        GetComponent<MeshFilter>().mesh.Clear();
         SB.UpdateSDF(operationA, objsdf);
 
-        Vector3 pos = operationA.position;
-        pos = new Vector3(pos.x - objsdf.Width / 2.0f, pos.y - objsdf.Height / 2.0f, pos.z - objsdf.Lenght / 2.0f);
-        pos = (pos - SB.sceneBox.min) / objsdf.Step;
-        Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
-        Vector3Int posEnd = objsdf.Ncells + posBegin;
-
-        print(posBegin);
-        print(posEnd);
-        NumToString(objsdf.Objsdf, "objsdf.txt");
+        
+        //NumToString(objsdf.Objsdf, "objsdf.txt");
 
         UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
 
         mc.ComputeMC();
-
         GetComponent<MeshFilter>().mesh = mc.mesh;
 
         //print(NumToString(SB.boxMatrix));
