@@ -99,10 +99,9 @@ public class SceneSDF : MonoBehaviour
     //marching cube
     public void UpdateMesh()
     {
-        SB.InitBoxMatrix();
+        SB.InitBoxMatrix(SB.boxMatrix, SB.ncells);
         //SB.UpdateSDF(operationA, objsdfA);
         SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType);
-
         
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
