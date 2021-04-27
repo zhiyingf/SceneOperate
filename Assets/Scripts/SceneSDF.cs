@@ -102,7 +102,42 @@ public class SceneSDF : MonoBehaviour
         SB.InitBoxMatrix(SB.boxMatrix, SB.ncells);
         //SB.UpdateSDF(operationA, objsdfA);
         SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType);
+
+        ///
+        //Vector3 pos = operationA.position;
+        //Vector3 sizeHalf = new Vector3(objsdfA.Width / 2.0f, objsdfA.Height / 2.0f, objsdfA.Lenght / 2.0f);
+        //Vector3 objAmin = pos - sizeHalf;
+        //Vector3 objAmax = pos + sizeHalf;
+
+        //pos = operationB.position;
+        //sizeHalf = new Vector3(objsdfB.Width / 2.0f, objsdfB.Height / 2.0f, objsdfB.Lenght / 2.0f);
+        //Vector3 objBmin = pos - sizeHalf;
+        //Vector3 objBmax = pos + sizeHalf;
+
+        //Vector3 boxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x), Mathf.Min(objAmin.y, objBmin.y), Mathf.Min(objAmin.z, objBmin.z));
+        //Vector3 boxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x), Mathf.Max(objAmax.y, objBmax.y), Mathf.Max(objAmax.z, objBmax.z));
+
+        //Vector3 boxSizef = (boxMax - boxMin) / objsdfB.Step;
+        //Vector3Int boxSize = new Vector3Int((int)boxSizef.x+5, (int)boxSizef.y+5, (int)boxSizef.z+5);
+        //print("boxSize: ");
+        //print(boxSize);
         
+
+        //float[,,] box = new float[boxSize.x + 1, boxSize.y + 1, boxSize.z + 1];
+        //SB.InitBoxMatrix(box, boxSize);
+
+        ////objB in box begin position
+        //pos = (objBmin - boxMin) / objsdfB.Step;
+        //Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        //Vector3Int posEnd = objsdfB.Ncells + posBegin;
+        //print("box objB: ");
+        //print(posBegin);
+        //print(posEnd);
+
+        ///
+
+
+
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
         UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
