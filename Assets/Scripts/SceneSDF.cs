@@ -35,8 +35,8 @@ public class SceneSDF : MonoBehaviour
         living = false;
 
         SB = new SceneBox();
-        objsdfA = new ObjSdfTable(1, 1, 1, 1);
-        objsdfB = new ObjSdfTable(1, 1, 1, 1);
+        objsdfA = new ObjSdfTable(1, 1, 1, true);
+        objsdfB = new ObjSdfTable(1, 1, 1, true);
 
 
         //记录物体最初的位置和状态

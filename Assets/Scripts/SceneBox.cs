@@ -43,16 +43,7 @@ public class SceneBox
         Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
-        for (int i = posBegin.x,ii=0; i <= posEnd.x; i++,ii++)
-        {
-            for (int j = posBegin.y,jj=0; j <= posEnd.y; j++,jj++)
-            {
-                for (int k = posBegin.z,kk=0; k <= posEnd.z; k++,kk++)
-                {
-                    boxMatrix[i, j, k] = sdfObj.Objsdf[ii, jj, kk];
-                }
-            }
-        }
+        SdfAssign(posBegin, posEnd, boxMatrix, sdfObj.Objsdf);
 
     }
 
@@ -85,62 +76,16 @@ public class SceneBox
         Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         Vector3Int posEnd = sdfObjB.Ncells + posBegin;
 
-        for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
-        {
-            for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
-            {
-                for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
-                {
-                    box[i, j, k] = sdfObjB.Objsdf[ii, jj, kk];
-                }
-            }
-        }
+        SdfAssign(posBegin, posEnd, box, sdfObjB.Objsdf);
 
         //box in sceneBox
         pos = (boxMin - sceneBox.min) / sdfObjA.Step;
         posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         posEnd = boxSize + posBegin;
 
+        SdfCompute(posBegin, posEnd, type, box);
 
-        if (type == BooleanType.Intersection)
-        {
-            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
-            {
-                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
-                {
-                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
-                    {
-                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], box[ii, jj, kk]);
-                    }
-                }
-            }
-        }
-        else if(type == BooleanType.Subtract)
-        {
-            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
-            {
-                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
-                {
-                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
-                    {
-                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], -box[ii, jj, kk]);
-                    }
-                }
-            }
-        }
-        else if(type == BooleanType.Union)
-        {
-            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
-            {
-                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
-                {
-                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
-                    {
-                        boxMatrix[i, j, k] = Mathf.Min(boxMatrix[i, j, k], box[ii, jj, kk]);
-                    }
-                }
-            }
-        }
+
     }
 
 
@@ -155,6 +100,64 @@ public class SceneBox
                 for(int k = 0; k <= size.z; k++)
                 {
                     box[i, j, k] = float.MaxValue;
+                }
+            }
+        }
+    }
+
+
+    void SdfAssign(Vector3Int posBegin, Vector3Int posEnd, float[,,] boxMatrix ,float[,,] objsdf)
+    {
+        for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+        {
+            for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+            {
+                for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                {
+                    boxMatrix[i, j, k] = objsdf[ii, jj, kk];
+                }
+            }
+        }
+    }
+
+    void SdfCompute(Vector3Int posBegin, Vector3Int posEnd, BooleanType type, float[,,] box)
+    {
+        if (type == BooleanType.Intersection)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], box[ii, jj, kk]);
+                    }
+                }
+            }
+        }
+        else if (type == BooleanType.Subtract)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], -box[ii, jj, kk]);
+                    }
+                }
+            }
+        }
+        else if (type == BooleanType.Union)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Min(boxMatrix[i, j, k], box[ii, jj, kk]);
+                    }
                 }
             }
         }
