@@ -14,7 +14,7 @@ public class UseMC
     public List<Vector3> verts = new List<Vector3>();
     public List<int> indices = new List<int>();
 
-    public UseMC(Vector3Int ncell, Vector3 mcMax, Vector3 mcMin,float[,,] voxels)
+    public UseMC(Vector3Int ncell, Vector3 mcMax, Vector3 mcMin, float[,,] voxels)
     {
         Ncell = ncell;
         McMin = mcMin;

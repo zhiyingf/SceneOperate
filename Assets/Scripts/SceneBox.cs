@@ -43,17 +43,79 @@ public class SceneBox
         Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
-        for (int i = posBegin.x; i <= posEnd.x; i++)
+        for (int i = posBegin.x,ii=0; i <= posEnd.x; i++,ii++)
         {
-            for (int j = posBegin.y; j <= posEnd.y; j++)
+            for (int j = posBegin.y,jj=0; j <= posEnd.y; j++,jj++)
             {
-                for (int k = posBegin.z; k <= posEnd.z; k++)
+                for (int k = posBegin.z,kk=0; k <= posEnd.z; k++,kk++)
                 {
-                    boxMatrix[i, j, k] = sdfObj.Objsdf[i - posBegin.x, j - posBegin.y, k - posBegin.z];
+                    boxMatrix[i, j, k] = sdfObj.Objsdf[ii, jj, kk];
                 }
             }
         }
 
+    }
+
+    public void UpdateSDF(Transform objA, ObjSdfTable sdfObjA,Transform objB,ObjSdfTable sdfObjB, BooleanType type)
+    {
+        //加两个物体
+        UpdateSDF(objA, sdfObjA);
+
+        Vector3 pos = objA.position;
+        Vector3 objAmin = new Vector3(pos.x - sdfObjA.Width / 2.0f, pos.y - sdfObjA.Height / 2.0f, pos.z - sdfObjA.Lenght / 2.0f);
+        Vector3 objAmax = new Vector3(pos.x + sdfObjA.Width / 2.0f, pos.y + sdfObjA.Height / 2.0f, pos.z + sdfObjA.Lenght / 2.0f);
+
+        pos = objB.position;
+        Vector3 objBmin = new Vector3(pos.x - sdfObjB.Width / 2.0f, pos.y - sdfObjB.Height / 2.0f, pos.z - sdfObjB.Lenght / 2.0f);
+        Vector3 objBmax = new Vector3(pos.x + sdfObjB.Width / 2.0f, pos.y + sdfObjB.Height / 2.0f, pos.z + sdfObjB.Lenght / 2.0f);
+
+        objAmin = new Vector3(Mathf.Min(objAmin.x, objBmin.x), Mathf.Min(objAmin.y, objBmin.y), Mathf.Min(objAmin.z, objBmin.z));
+        objAmax = new Vector3(Mathf.Max(objAmin.x, objBmin.x), Mathf.Max(objAmin.y, objBmin.y), Mathf.Max(objAmin.z, objBmin.z));
+
+        objAmax = (objAmax - objBmin) / sdfObjB.Step;
+        
+        Vector3Int posBegin = new Vector3Int((int)Mathf.Round(objAmax.x), (int)Mathf.Round(objAmax.y), (int)Mathf.Round(objAmax.z));
+        Vector3Int posEnd = sdfObjB.Ncells + posBegin;
+
+        if(type == BooleanType.Intersection)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], sdfObjB.Objsdf[ii, jj, kk]);
+                    }
+                }
+            }
+        }
+        else if(type == BooleanType.Subtract)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Max(boxMatrix[i, j, k], -sdfObjB.Objsdf[ii, jj, kk]);
+                    }
+                }
+            }
+        }
+        else if(type == BooleanType.Union)
+        {
+            for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
+            {
+                for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
+                {
+                    for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
+                    {
+                        boxMatrix[i, j, k] = Mathf.Min(boxMatrix[i, j, k], sdfObjB.Objsdf[ii, jj, kk]);
+                    }
+                }
+            }
+        }
     }
 
 
