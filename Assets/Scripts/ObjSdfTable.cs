@@ -70,7 +70,7 @@ public class ObjSdfTable
                     Vector3 p = new Vector3(vx, vy, vz);
                     p += origin;
                     ///
-                    Vector3 q = new Vector3(Mathf.Abs(p.x), Mathf.Abs(p.y), Mathf.Abs(p.z)) - b;
+                    Vector3 q = new Vector3(Mathf.Abs(p.x), Mathf.Abs(p.y), Mathf.Abs(p.z)) - b/2;
                     Vector3 qmax = new Vector3(Mathf.Max(q.x, 0.0f), Mathf.Max(q.y, 0.0f), Mathf.Max(q.z, 0.0f));
                     ///
                     Objsdf[i, j, k] = qmax.magnitude - Mathf.Min(Mathf.Max(q.x, Mathf.Max(q.y, q.z)), 0.0f);
