@@ -10,21 +10,28 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SceneSDF : MonoBehaviour
 {
-    public SceneBox SB;//= new SceneBox();
-    ObjSdfTable objsdfA;//= new ObjSdfTable(1, 1, 1, 1);
+    public SceneBox SB;
+    ObjSdfTable objsdfA;
     ObjSdfTable objsdfB;
     public Transform operationA;///???
     public Transform operationB;
 
+    public bool isEditor;
     public BooleanType operationType;
 
     //A lock that controls the execution of a program
-    private bool living = false;
+    public bool living = false;
 
     //late state
+    private MeshFilter filterA;
     private Vector3 positionA;
     private Quaternion rotationA;
     private Vector3 scaleA;
+
+    private MeshFilter filterB;
+    private Vector3 positionB;
+    private Quaternion rotationB;
+    private Vector3 scaleB;
 
     //BooleanCompute class
     //private BooleanCompute sdfCompute;
@@ -33,30 +40,49 @@ public class SceneSDF : MonoBehaviour
     void Start()
     {
         living = false;
+        Init();
+    }
 
+    /// <summary>
+    /// 1.初始化体素场，加载两个物体对应的SDF值
+    /// 2.记录两个物体的位置、角度、大致范围
+    /// </summary>
+    public void Init()
+    {
         SB = new SceneBox();
         objsdfA = new ObjSdfTable(1, 1, 1, true);
         objsdfB = new ObjSdfTable(1, 1, 1, true);
 
 
         //记录物体最初的位置和状态
-        if (operationA != null)
+        if (operationA != null && operationB != null)
         {
-            MeshFilter filterA = operationA.GetComponent<MeshFilter>();
+            filterA = operationA.GetComponent<MeshFilter>();
             positionA = filterA.transform.position;
             rotationA = filterA.transform.rotation;
             scaleA = filterA.transform.lossyScale;
+
+            filterB = operationB.GetComponent<MeshFilter>();
+            positionB = filterB.transform.position;
+            rotationB = filterB.transform.rotation;
+            scaleB = filterB.transform.lossyScale;
+
+            if(isEditor&&(!Application.isEditor || Application.isPlaying))
+            {
+                StartCoroutine(Execute());
+            }
+
         }
     }
-
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        if (Application.isEditor && !Application.isPlaying)
+        ///作用不大？？？
+        if (isEditor && Application.isEditor && !Application.isPlaying)
         {
             if (!living)
             {
-                //StartCoroutine(Execute());
+                StartCoroutine(Execute());
             }
         }
     }
@@ -70,7 +96,18 @@ public class SceneSDF : MonoBehaviour
     //judge operationObj if changed
     public bool Changed()
     {
-        if (operationA.transform.position != positionA || operationA.transform.rotation != rotationA || operationA.transform.lossyScale != scaleA)
+        bool changeA = operationA.transform.position != positionA || operationA.transform.rotation != rotationA || operationA.transform.lossyScale != scaleA;
+        bool changeB = operationB.transform.position != positionB || operationB.transform.rotation != rotationB || operationB.transform.lossyScale != scaleB;
+
+        positionA = filterA.transform.position;
+        rotationA = filterA.transform.rotation;
+        scaleA = filterA.transform.lossyScale;
+
+        positionB = filterB.transform.position;
+        rotationB = filterB.transform.rotation;
+        scaleB = filterB.transform.lossyScale;
+
+        if (changeA||changeB)
         {
             return true;
         }
@@ -82,12 +119,15 @@ public class SceneSDF : MonoBehaviour
     {
         living = true;
         //Bounds operationBound = operationA.GetComponent<Renderer>().bounds;
-        while (operationA != null && SB.sceneBox.Intersects(operationA.GetComponent<Renderer>().bounds))
+        while (operationA != null && operationB != null && SB.sceneBox.Intersects(operationA.GetComponent<Renderer>().bounds) && SB.sceneBox.Intersects(operationB.GetComponent<Renderer>().bounds))
         {
             if (Changed())
-            {   //update SDF???
-                SB.UpdateSDF(operationA, objsdfA);
-
+            {   
+                UpdateMesh();
+            }
+            else
+            {
+                yield return null;
             }
         }
         yield return null;
