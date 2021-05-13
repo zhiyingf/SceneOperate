@@ -66,7 +66,8 @@ public abstract class Marching : IMarching
                         iy = y + VertexOffset[i, 1];
                         iz = z + VertexOffset[i, 2];
 
-                        Cube[i] = voxels[ix + iy * (Ncells.x+1) + iz * (Ncells.x+1) * (Ncells.y+1)];
+                        //Cube[i] = voxels[ix + iy * (Ncells.x+1) + iz * (Ncells.x+1) * (Ncells.y+1)];
+                        Cube[i] = voxels[iz + iy * (Ncells.z + 1) + ix * (Ncells.y + 1) * (Ncells.z + 1)];
                     }
                     //Perform algorithm
                     March(Cube, verts, indices);

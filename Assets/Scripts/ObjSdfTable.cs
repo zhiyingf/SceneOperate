@@ -9,17 +9,18 @@ public class ObjSdfTable
     public float Lenght;
     public float Step = 0.1f;
     public Vector3Int Ncells;
-    public float[,,] Objsdf;
+    public float[] Objsdf;
 
 
     //General SDF for preloaded objects
-    public ObjSdfTable(float width, float height, float lenght, float[,,] objsdf)
+    public ObjSdfTable(float width, float height, float lenght)
     {
         Lenght = lenght;
         Width = width;
         Height = height;
         Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
-        Objsdf = objsdf;
+        Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
+        //Objsdf = objsdf;
     }
 
     //Calculate the SDF of the circle using implicit functions
@@ -29,7 +30,7 @@ public class ObjSdfTable
         Width = width;
         Height = height;
         Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
-        Objsdf = new float[Ncells.x+1, Ncells.y+1, Ncells.z+1];
+        Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
         if(flag) ComputeSphereSdf(1);
         else ComputeBoxSdf(new Vector3(1,1,1));
     }
@@ -49,7 +50,8 @@ public class ObjSdfTable
                     float vz = Step * k;
                     Vector3 v3 = new Vector3(vx, vy, vz);
                     v3 += origin;
-                    Objsdf[i, j, k] = v3.magnitude - r/2;
+                    int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    Objsdf[idx] = v3.magnitude - r/2;
                 }
             }
         }
@@ -73,7 +75,8 @@ public class ObjSdfTable
                     Vector3 q = new Vector3(Mathf.Abs(p.x), Mathf.Abs(p.y), Mathf.Abs(p.z)) - b/2;
                     Vector3 qmax = new Vector3(Mathf.Max(q.x, 0.0f), Mathf.Max(q.y, 0.0f), Mathf.Max(q.z, 0.0f));
                     ///
-                    Objsdf[i, j, k] = qmax.magnitude - Mathf.Min(Mathf.Max(q.x, Mathf.Max(q.y, q.z)), 0.0f);
+                    int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    Objsdf[idx] = qmax.magnitude - Mathf.Min(Mathf.Max(q.x, Mathf.Max(q.y, q.z)), 0.0f);
                 }
             }
         }

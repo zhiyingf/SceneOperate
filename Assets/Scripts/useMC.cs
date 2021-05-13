@@ -28,7 +28,8 @@ public class UseMC
                 for(int z = 0; z <= Ncell.z; z++)
                 {
                     Vector3 coord = new Vector3(McMin.x + x * Step, McMin.y + y * Step, McMin.z + z * Step);
-                    int idx = x + y * (Ncell.y + 1) + z * (Ncell.x + 1) * (Ncell.y + 1);
+                    //int idx = x + y * (Ncell.y + 1) + z * (Ncell.x + 1) * (Ncell.y + 1);
+                    int idx = z + y * (Ncell.z + 1) + x * (Ncell.y + 1) * (Ncell.z + 1);
                     Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, voxels[x, y, z]);
                 }
             }

@@ -18,7 +18,7 @@ public class SceneSDFEditor : Editor
             scenesdf.isEditor = executeflag;
             scenesdf.living = false;
             scenesdf.StopAllCoroutines();
-            scenesdf.Init();
+            //scenesdf.Init();
         }
         scenesdf.operationType = (BooleanType)EditorGUILayout.EnumPopup("Operation", scenesdf.operationType);
         scenesdf.operationA = (Transform)EditorGUILayout.ObjectField("OperandA", scenesdf.operationA, typeof(Transform), true);

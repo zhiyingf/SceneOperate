@@ -106,15 +106,18 @@ public class SceneBox
     }
 
 
-    void SdfAssign(Vector3Int posBegin, Vector3Int posEnd, float[,,] boxMatrix ,float[,,] objsdf)
+    void SdfAssign(Vector3Int posBegin, Vector3Int posEnd, float[,,] boxMatrix ,float[] objsdf)
     {
+        Vector3Int ixyz = posEnd - posBegin + new Vector3Int(1, 1, 1);
+
         for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
         {
             for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
             {
                 for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
                 {
-                    boxMatrix[i, j, k] = objsdf[ii, jj, kk];
+                    int idx = ii * ixyz.y * ixyz.z + jj * ixyz.z + kk;
+                    boxMatrix[i, j, k] = objsdf[idx];
                 }
             }
         }

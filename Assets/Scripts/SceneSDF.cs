@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 //main scene
@@ -33,6 +35,8 @@ public class SceneSDF : MonoBehaviour
     private Quaternion rotationB;
     private Vector3 scaleB;
 
+    private List<Material> mats = new List<Material>();
+
     //BooleanCompute class
     //private BooleanCompute sdfCompute;
 
@@ -50,13 +54,16 @@ public class SceneSDF : MonoBehaviour
     public void Init()
     {
         SB = new SceneBox();
-        objsdfA = new ObjSdfTable(1, 1, 1, true);
-        objsdfB = new ObjSdfTable(1, 1, 1, true);
-
 
         //记录物体最初的位置和状态
         if (operationA != null && operationB != null)
         {
+            objsdfA = new ObjSdfTable(2, 2, 2);//sphere
+            objsdfB = new ObjSdfTable(1, 1, 1, true);//sphere
+
+            ReadSDF(operationA.name, objsdfA.Objsdf);
+
+
             filterA = operationA.GetComponent<MeshFilter>();
             positionA = filterA.transform.position;
             rotationA = filterA.transform.rotation;
@@ -67,7 +74,12 @@ public class SceneSDF : MonoBehaviour
             rotationB = filterB.transform.rotation;
             scaleB = filterB.transform.lossyScale;
 
-            if(isEditor&&(!Application.isEditor || Application.isPlaying))
+            mats.Clear();
+            mats.AddRange(operationA.GetComponent<Renderer>().sharedMaterials);
+            //mats.AddRange(operationB.GetComponent<Renderer>().sharedMaterials);
+
+            //&& Application.isEditor 
+            if (isEditor && Application.isPlaying)
             {
                 StartCoroutine(Execute());
             }
@@ -77,13 +89,10 @@ public class SceneSDF : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
-        ///作用不大？？？
-        if (isEditor && Application.isEditor && !Application.isPlaying)
+        ///作用不大？？？ && Application.isEditor 
+        if (!living && isEditor&& Application.isPlaying)
         {
-            if (!living)
-            {
-                StartCoroutine(Execute());
-            }
+            StartCoroutine(Execute());
         }
     }
 
@@ -99,6 +108,7 @@ public class SceneSDF : MonoBehaviour
         bool changeA = operationA.transform.position != positionA || operationA.transform.rotation != rotationA || operationA.transform.lossyScale != scaleA;
         bool changeB = operationB.transform.position != positionB || operationB.transform.rotation != rotationB || operationB.transform.lossyScale != scaleB;
 
+        //保存两个物体上一次位置、方向、范围的变化
         positionA = filterA.transform.position;
         rotationA = filterA.transform.rotation;
         scaleA = filterA.transform.lossyScale;
@@ -115,13 +125,13 @@ public class SceneSDF : MonoBehaviour
     }
 
     //Execute update SDF
-    public IEnumerator Execute()
+    private IEnumerator Execute()
     {
         living = true;
         //Bounds operationBound = operationA.GetComponent<Renderer>().bounds;
         while (operationA != null && operationB != null && SB.sceneBox.Intersects(operationA.GetComponent<Renderer>().bounds) && SB.sceneBox.Intersects(operationB.GetComponent<Renderer>().bounds))
         {
-            if (Changed())
+            if (Changed())         
             {   
                 UpdateMesh();
             }
@@ -184,6 +194,7 @@ public class SceneSDF : MonoBehaviour
 
         mc.ComputeMC();
         GetComponent<MeshFilter>().mesh = mc.mesh;
+        GetComponent<Renderer>().sharedMaterials = mats.ToArray();
 
         //print(NumToString(SB.boxMatrix));
         //NumToString(SB.boxMatrix, "boxMatrix.txt");
@@ -215,5 +226,43 @@ public class SceneSDF : MonoBehaviour
 
         //return str;
     }
+
+
+    /// <summary>
+    /// 从本地读取二进制文件至sdf float[]
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="sdf"></param>
+    public void ReadSDF(string name, float[] sdf)
+    {
+        name = "Assets\\SDF\\" + name + ".txt";
+        //print(System.IO.Directory.GetCurrentDirectory());
+        if (!File.Exists(name))
+        {
+            //Console.WriteLine($"{name} does not exist.");
+            print(name + " not exist");
+            return;
+        }
+        
+        FileStream f = new FileStream(name, FileMode.Open,
+            FileAccess.Read, FileShare.Read);
+        // Create an instance of BinaryReader that can
+        // read bytes from the FileStream.
+
+        using (BinaryReader br = new BinaryReader(f))
+        {
+            int size = sizeof(float) * sdf.Length;
+            byte[] bb = new byte[size];
+            br.Read(bb, 0, size);
+
+            for(int i = 0, j = 0; i < size; i += 4,j++)
+            {
+                sdf[j] = BitConverter.ToSingle(bb, i);
+            }
+        }
+    }
+
+
+
 
 }
