@@ -37,9 +37,8 @@ public class SceneBox
 
     public void UpdateSDF(Transform obj, ObjSdfTable sdfObj)
     {//加第一个物体 只有平移
-        Vector3 pos = obj.position;
-        pos = new Vector3(pos.x - sdfObj.Width / 2.0f, pos.y - sdfObj.Height / 2.0f, pos.z - sdfObj.Lenght / 2.0f);
-        pos = (pos - sceneBox.min) / sdfObj.Step;
+        Vector3 sizeHalf = sdfObj.Whl / 2.0f;
+        Vector3 pos = (obj.position - sizeHalf - sceneBox.min) / sdfObj.Step;
         Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
@@ -53,12 +52,12 @@ public class SceneBox
         UpdateSDF(objA, sdfObjA);
 
         Vector3 pos = objA.position;
-        Vector3 sizeHalf = new Vector3(sdfObjA.Width / 2.0f, sdfObjA.Height / 2.0f, sdfObjA.Lenght / 2.0f);
+        Vector3 sizeHalf = sdfObjA.Whl / 2.0f;
         Vector3 objAmin = pos - sizeHalf;
         Vector3 objAmax = pos + sizeHalf;
 
         pos = objB.position;
-        sizeHalf = new Vector3(sdfObjB.Width / 2.0f, sdfObjB.Height / 2.0f, sdfObjB.Lenght / 2.0f);
+        sizeHalf = sdfObjB.Whl / 2.0f;
         Vector3 objBmin = pos - sizeHalf;
         Vector3 objBmax = pos + sizeHalf;
 

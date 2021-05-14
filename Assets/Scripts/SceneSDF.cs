@@ -58,8 +58,17 @@ public class SceneSDF : MonoBehaviour
         //记录物体最初的位置和状态
         if (operationA != null && operationB != null)
         {
-            objsdfA = new ObjSdfTable(2, 2, 2);//sphere
-            objsdfB = new ObjSdfTable(1, 1, 1, true);//sphere
+            ///物体包围盒中心在原点
+            ///小数处理
+            ///max<0.5----0.5----size:1.0 (max<0.5 则 0.0 < size < 1.0)
+            ///max>0.5----1.0----size:2.0 (max>0.5 则 1.0 < size < 2.0)
+
+            Vector3 sizeA = operationA.GetComponent<Renderer>().bounds.size;
+            Vector3 sizeB = operationB.GetComponent<Renderer>().bounds.size;
+            //print(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
+            //print(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));
+            objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
+            objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
 
             ReadSDF(operationA.name, objsdfA.Objsdf);
 

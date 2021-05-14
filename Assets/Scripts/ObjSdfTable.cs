@@ -4,32 +4,29 @@ using UnityEngine;
 
 public class ObjSdfTable
 {
-    public float Width;
-    public float Height;
-    public float Lenght;
+    //public float Width;
+    //public float Height;
+    //public float Lenght;
+    public Vector3 Whl;
     public float Step = 0.1f;
     public Vector3Int Ncells;
     public float[] Objsdf;
 
 
     //General SDF for preloaded objects
-    public ObjSdfTable(float width, float height, float lenght)
+    public ObjSdfTable(Vector3 whl)
     {
-        Lenght = lenght;
-        Width = width;
-        Height = height;
-        Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
+        Whl = whl;
+        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Step), (int)Mathf.Round(Whl.y / Step), (int)Mathf.Round(Whl.z / Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
         //Objsdf = objsdf;
     }
 
     //Calculate the SDF of the circle using implicit functions
-    public ObjSdfTable(float width, float height, float lenght, bool flag)
+    public ObjSdfTable(Vector3 whl, bool flag)
     {
-        Lenght = lenght;
-        Width = width;
-        Height = height;
-        Ncells = new Vector3Int((int)Mathf.Round(Width / Step), (int)Mathf.Round(Height / Step), (int)Mathf.Round(Lenght / Step));
+        Whl = whl;
+        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Step), (int)Mathf.Round(Whl.y / Step), (int)Mathf.Round(Whl.z / Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
         if(flag) ComputeSphereSdf(1);
         else ComputeBoxSdf(new Vector3(1,1,1));
