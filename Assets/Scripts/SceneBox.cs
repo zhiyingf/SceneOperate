@@ -65,7 +65,7 @@ public class SceneBox
         Vector3 boxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x), Mathf.Max(objAmax.y, objBmax.y), Mathf.Max(objAmax.z, objBmax.z));
 
         Vector3 boxSizef = (boxMax - boxMin) / sdfObjB.Step;
-        Vector3Int boxSize = new Vector3Int((int)boxSizef.x+5, (int)boxSizef.y+5, (int)boxSizef.z+5);
+        Vector3Int boxSize = new Vector3Int((int)boxSizef.x+5, (int)boxSizef.y+5, (int)boxSizef.z+5);//bias = 5
 
         float[,,] box = new float[boxSize.x + 1, boxSize.y + 1, boxSize.z + 1];
         InitBoxMatrix(box, boxSize);
@@ -115,7 +115,8 @@ public class SceneBox
             {
                 for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
                 {
-                    int idx = ii * ixyz.y * ixyz.z + jj * ixyz.z + kk;
+                    //int idx = ii * ixyz.y * ixyz.z + jj * ixyz.z + kk;
+                    int idx = ii + jj * ixyz.x + kk * ixyz.y * ixyz.x;
                     boxMatrix[i, j, k] = objsdf[idx];
                 }
             }

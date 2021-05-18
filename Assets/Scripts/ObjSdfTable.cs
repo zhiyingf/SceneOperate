@@ -48,6 +48,8 @@ public class ObjSdfTable
                     Vector3 v3 = new Vector3(vx, vy, vz);
                     v3 += origin;
                     int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    //int idx = k * (Ncells.y + 1) * (Ncells.x + 1) + j * (Ncells.x + 1) + i;
+                    //int idx = i * (Ncells.y + 1) * (Ncells.x + 1) + k * (Ncells.x + 1) + j;
                     Objsdf[idx] = v3.magnitude - r/2;
                 }
             }
@@ -72,7 +74,8 @@ public class ObjSdfTable
                     Vector3 q = new Vector3(Mathf.Abs(p.x), Mathf.Abs(p.y), Mathf.Abs(p.z)) - b/2;
                     Vector3 qmax = new Vector3(Mathf.Max(q.x, 0.0f), Mathf.Max(q.y, 0.0f), Mathf.Max(q.z, 0.0f));
                     ///
-                    int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    //int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    int idx = k * (Ncells.y + 1) * (Ncells.x + 1) + j * (Ncells.x + 1) + i;
                     Objsdf[idx] = qmax.magnitude - Mathf.Min(Mathf.Max(q.x, Mathf.Max(q.y, q.z)), 0.0f);
                 }
             }
