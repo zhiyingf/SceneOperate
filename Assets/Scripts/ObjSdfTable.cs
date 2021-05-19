@@ -47,8 +47,8 @@ public class ObjSdfTable
                     float vz = Step * k;
                     Vector3 v3 = new Vector3(vx, vy, vz);
                     v3 += origin;
-                    int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
-                    //int idx = k * (Ncells.y + 1) * (Ncells.x + 1) + j * (Ncells.x + 1) + i;
+                    //int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
+                    int idx = k * (Ncells.y + 1) * (Ncells.x + 1) + j * (Ncells.x + 1) + i;
                     //int idx = i * (Ncells.y + 1) * (Ncells.x + 1) + k * (Ncells.x + 1) + j;
                     Objsdf[idx] = v3.magnitude - r/2;
                 }

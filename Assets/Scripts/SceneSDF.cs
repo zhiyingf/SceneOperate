@@ -269,8 +269,8 @@ public class SceneSDF : MonoBehaviour
                 sdf[j] = BitConverter.ToSingle(bb, i);
             }
         }
-        print(sdf[0]);
-        print(sdf[9]);
+        //print(sdf[0]);
+        //print(sdf[9]);
     }
 
 

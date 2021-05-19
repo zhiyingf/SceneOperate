@@ -117,6 +117,7 @@ public class SceneBox
                 {
                     //int idx = ii * ixyz.y * ixyz.z + jj * ixyz.z + kk;
                     int idx = ii + jj * ixyz.x + kk * ixyz.y * ixyz.x;
+                    
                     boxMatrix[i, j, k] = objsdf[idx];
                 }
             }
