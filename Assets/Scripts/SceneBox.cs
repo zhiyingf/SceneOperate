@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-//manage scene box
-static class Constants
-{
-    public const float Lenght = 10f;
-    public const float Width = 10f;
-    public const float Height = 10f;
-    public const float Step = 0.1f;
-}
-
-
 public class SceneBox
 {
     public Bounds sceneBox;
@@ -20,6 +10,12 @@ public class SceneBox
     public Vector3 size;
     public Vector3Int ncells;
     public float[,,] boxMatrix;
+
+    //sdf局部更新---MC局部更新
+    public Vector3Int posBegin;
+    public Vector3Int posEnd;
+    public Vector3 localBoxMin;
+    public Vector3 localBoxMax;
 
 
     public SceneBox()
@@ -38,7 +34,7 @@ public class SceneBox
     public void UpdateSDF(Transform obj, ObjSdfTable sdfObj)
     {//加第一个物体 只有平移
         Vector3 sizeHalf = sdfObj.Whl / 2.0f;
-        Vector3 pos = (obj.position - sizeHalf - sceneBox.min) / sdfObj.Step;
+        Vector3 pos = (obj.position - sizeHalf - sceneBox.min) / Constants.Step;
         Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
@@ -61,24 +57,25 @@ public class SceneBox
         Vector3 objBmin = pos - sizeHalf;
         Vector3 objBmax = pos + sizeHalf;
 
-        Vector3 boxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x), Mathf.Min(objAmin.y, objBmin.y), Mathf.Min(objAmin.z, objBmin.z));
-        Vector3 boxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x), Mathf.Max(objAmax.y, objBmax.y), Mathf.Max(objAmax.z, objBmax.z));
+        //local box min max
+        localBoxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x), Mathf.Min(objAmin.y, objBmin.y), Mathf.Min(objAmin.z, objBmin.z));
+        localBoxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x), Mathf.Max(objAmax.y, objBmax.y), Mathf.Max(objAmax.z, objBmax.z));
 
-        Vector3 boxSizef = (boxMax - boxMin) / sdfObjB.Step;
+        Vector3 boxSizef = (localBoxMax - localBoxMin) / Constants.Step;
         Vector3Int boxSize = new Vector3Int((int)boxSizef.x+5, (int)boxSizef.y+5, (int)boxSizef.z+5);//bias = 5
 
         float[,,] box = new float[boxSize.x + 1, boxSize.y + 1, boxSize.z + 1];
         InitBoxMatrix(box, boxSize);
 
         //objB in box begin position
-        pos = (objBmin - boxMin) / sdfObjA.Step;
-        Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
-        Vector3Int posEnd = sdfObjB.Ncells + posBegin;
+        pos = (objBmin - localBoxMin) / Constants.Step;
+        posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        posEnd = sdfObjB.Ncells + posBegin;
 
         SdfAssign(posBegin, posEnd, box, sdfObjB.Objsdf);
 
         //box in sceneBox
-        pos = (boxMin - sceneBox.min) / sdfObjA.Step;
+        pos = (localBoxMin - sceneBox.min) / Constants.Step;
         posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
         posEnd = boxSize + posBegin;
 

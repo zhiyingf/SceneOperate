@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class ObjSdfTable
 {
-    //public float Width;
-    //public float Height;
-    //public float Lenght;
     public Vector3 Whl;
-    public float Step = 0.1f;
     public Vector3Int Ncells;
     public float[] Objsdf;
 
@@ -17,16 +13,15 @@ public class ObjSdfTable
     public ObjSdfTable(Vector3 whl)
     {
         Whl = whl;
-        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Step), (int)Mathf.Round(Whl.y / Step), (int)Mathf.Round(Whl.z / Step));
+        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Constants.Step), (int)Mathf.Round(Whl.y / Constants.Step), (int)Mathf.Round(Whl.z / Constants.Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
-        //Objsdf = objsdf;
     }
 
     //Calculate the SDF of the circle using implicit functions
     public ObjSdfTable(Vector3 whl, bool flag)
     {
         Whl = whl;
-        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Step), (int)Mathf.Round(Whl.y / Step), (int)Mathf.Round(Whl.z / Step));
+        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Constants.Step), (int)Mathf.Round(Whl.y / Constants.Step), (int)Mathf.Round(Whl.z / Constants.Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
         if(flag) ComputeSphereSdf(1);
         else ComputeBoxSdf(new Vector3(1,1,1));
@@ -38,18 +33,18 @@ public class ObjSdfTable
         Vector3 origin = new Vector3(-r/2, -r/2, -r/2);
         for (int i = 0; i <= Ncells.x; i++)
         {
-            float vx = Step * i;
+            float vx = Constants.Step * i;
             for (int j = 0; j <= Ncells.y; j++)
             {
-                float vy = Step * j;
+                float vy = Constants.Step * j;
                 for (int k = 0; k <= Ncells.z; k++)
                 {
-                    float vz = Step * k;
+                    float vz = Constants.Step * k;
                     Vector3 v3 = new Vector3(vx, vy, vz);
                     v3 += origin;
                     //int idx = i * (Ncells.y + 1) * (Ncells.z + 1) + j * (Ncells.z + 1) + k;
                     int idx = k * (Ncells.y + 1) * (Ncells.x + 1) + j * (Ncells.x + 1) + i;
-                    //int idx = i * (Ncells.y + 1) * (Ncells.x + 1) + k * (Ncells.x + 1) + j;
+                   
                     Objsdf[idx] = v3.magnitude - r/2;
                 }
             }
@@ -61,13 +56,13 @@ public class ObjSdfTable
         Vector3 origin = -b/2;
         for (int i = 0; i <= Ncells.x; i++)
         {
-            float vx = Step * i;
+            float vx = Constants.Step * i;
             for (int j = 0; j <= Ncells.y; j++)
             {
-                float vy = Step * j;
+                float vy = Constants.Step * j;
                 for (int k = 0; k <= Ncells.z; k++)
                 {
-                    float vz = Step * k;
+                    float vz = Constants.Step * k;
                     Vector3 p = new Vector3(vx, vy, vz);
                     p += origin;
                     ///

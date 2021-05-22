@@ -18,7 +18,7 @@ public class MarchingCubes : Marching
         
 
         //Find which vertices are inside of the surface and which are outside
-        for (i = 0; i < 8; i++) if (cube[i].w <= Surface) cubeIndex |= 1 << i;
+        for (i = 0; i < 8; i++) if (cube[i].w < Surface) cubeIndex |= 1 << i;
 
 		//Find which edges are intersected by the surface
 		int edgeFlag = EdgeTable[cubeIndex];
