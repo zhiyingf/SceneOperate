@@ -23,6 +23,7 @@ public class SceneSDFEditor : Editor
         scenesdf.operationType = (BooleanType)EditorGUILayout.EnumPopup("Operation", scenesdf.operationType);
         scenesdf.operationA = (Transform)EditorGUILayout.ObjectField("OperandA", scenesdf.operationA, typeof(Transform), true);
         scenesdf.operationB = (Transform)EditorGUILayout.ObjectField("OperandB", scenesdf.operationB, typeof(Transform), true);
+        scenesdf.McShader = (ComputeShader)EditorGUILayout.ObjectField("McShader", scenesdf.McShader, typeof(ComputeShader), true);
 
         GUILayout.Space(8.0f);
 

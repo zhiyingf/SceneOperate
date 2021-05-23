@@ -12,7 +12,7 @@ struct Triangle {
 AppendStructuredBuffer<Triangle> triangles;
 RWStructuredBuffer<float4> points;
 
-int numPointsPerAxis;
+int3 numPointsXyzAxis;
 float isoLevel;
 
 float3 interpolateVerts(float4 v1, float4 v2) {
@@ -21,26 +21,27 @@ float3 interpolateVerts(float4 v1, float4 v2) {
 }
 
 int indexFromCoord(int x, int y, int z) {
-    return z * numPointsPerAxis * numPointsPerAxis + y * numPointsPerAxis + x;
+    return z * numPointsXyzAxis.y * numPointsXyzAxis.x + y * numPointsXyzAxis.x + x;
 }
+
 [numthreads(numThreads, numThreads, numThreads)]
 void March(int3 id : SV_DispatchThreadID)
 {
     // Stop one point before the end because voxel includes neighbouring points
-    if (id.x >= numPointsPerAxis - 1 || id.y >= numPointsPerAxis - 1 || id.z >= numPointsPerAxis - 1) {
+    if (id.x >= numPointsXyzAxis.x - 1 || id.y >= numPointsXyzAxis.y - 1 || id.z >= numPointsXyzAxis.z - 1) {
         return;
     }
 
     // 8 corners of the current cube
     float4 cubeCorners[8] = {
-        points[indexFromCoord(id.x, id.y, id.z)],
-        points[indexFromCoord(id.x + 1, id.y, id.z)],
-        points[indexFromCoord(id.x + 1, id.y, id.z + 1)],
-        points[indexFromCoord(id.x, id.y, id.z + 1)],
-        points[indexFromCoord(id.x, id.y + 1, id.z)],
-        points[indexFromCoord(id.x + 1, id.y + 1, id.z)],
-        points[indexFromCoord(id.x + 1, id.y + 1, id.z + 1)],
-        points[indexFromCoord(id.x, id.y + 1, id.z + 1)]
+        points[indexFromCoord(id.x, id.y, id.z)],//(0,0,0)
+        points[indexFromCoord(id.x + 1, id.y, id.z)],//(1,0,0)
+        points[indexFromCoord(id.x + 1, id.y + 1, id.z)],//(1,1,0)
+        points[indexFromCoord(id.x, id.y + 1, id.z)],//(0,1,0)
+        points[indexFromCoord(id.x, id.y, id.z + 1)],//(0,0,1)
+        points[indexFromCoord(id.x + 1, id.y, id.z + 1)],//(1,0,1)
+        points[indexFromCoord(id.x + 1, id.y + 1, id.z + 1)],//(1,1,1)
+        points[indexFromCoord(id.x, id.y + 1, id.z + 1)]//(0,1,1)
     };
 
     // Calculate unique index for each cube configuration.

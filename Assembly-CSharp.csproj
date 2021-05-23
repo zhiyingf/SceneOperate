@@ -72,7 +72,8 @@
     <Compile Include="Assets\Scripts\SceneBox.cs" />
     <Compile Include="Assets\Scripts\SceneSDF.cs" />
     <Compile Include="Assets\Scripts\SceneSDFEditor.cs" />
-    <Compile Include="Assets\Scripts\useMC.cs" />
+    <Compile Include="Assets\Scripts\UseMC.cs" />
+    <Compile Include="Assets\Scripts\UseMCshader.cs" />
     <None Include="Assets\Scripts\Compute\MarchingCubes.compute" />
     <None Include="Assets\SDF\bunny.txt" />
     <None Include="Assets\SDF\bunny20.txt" />

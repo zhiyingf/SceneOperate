@@ -67,17 +67,6 @@ public class MarchingCubes : Marching
     };
 
     /// <summary>
-    /// edgeDirection lists the direction vector (vertex1-vertex0) for each edge in the cube.
-    /// edgeDirection[12][3]
-    /// </summary>
-    //private static readonly float[,] EdgeDirection = new float[,]
-    //{
-    //		{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
-    //		{1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
-    //		{0.0f, 0.0f, 1.0f},{0.0f, 0.0f, 1.0f},{ 0.0f, 0.0f, 1.0f},{0.0f,  0.0f, 1.0f}
-    //};
-
-    /// <summary>
     /// For any edge, if one vertex is inside of the surface and the other 
     /// is outside of the surface then the edge intersects the surface.
     /// For each of the 8 vertices of the cube can be two possible states,

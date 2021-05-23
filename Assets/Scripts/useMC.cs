@@ -5,12 +5,13 @@ using UnityEngine;
 public class UseMC 
 {
     public Mesh mesh = new Mesh();
-    public Vector3Int Npoint;//Npoint = ncell + Vector3Int.one;
-    public Vector4[] Voxels;
-    public Vector3 McMin;
-    public Vector3 McMax;
-    public List<Vector3> verts = new List<Vector3>();
-    public List<int> indices = new List<int>();
+
+    Vector3Int Npoint;//Npoint = ncell + Vector3Int.one;
+    Vector4[] Voxels;
+    Vector3 McMin;
+    Vector3 McMax;
+    List<Vector3> verts = new List<Vector3>();
+    List<int> indices = new List<int>();
 
     /// <summary>
     /// MC 全局更新

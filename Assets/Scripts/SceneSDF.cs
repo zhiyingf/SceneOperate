@@ -37,6 +37,8 @@ public class SceneSDF : MonoBehaviour
 
     private List<Material> mats = new List<Material>();
 
+    public ComputeShader McShader;
+
     //BooleanCompute class
     //private BooleanCompute sdfCompute;
 
@@ -164,19 +166,41 @@ public class SceneSDF : MonoBehaviour
 
         SB.InitBoxMatrix(SB.boxMatrix, SB.ncells);
         //SB.UpdateSDF(operationA, objsdfA);
+        //NumToString(objsdf.Objsdf, "objsdf.txt");
+
         SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType);
 
-        //NumToString(objsdf.Objsdf, "objsdf.txt");
 
         //MC 全局更新
         //UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
 
         //MC 局部更新
-        UseMC mc = new UseMC(SB);
+        //UseMC mc = new UseMC(SB);
+        //mc.ComputeMC();
+        //GetComponent<MeshFilter>().mesh = mc.mesh;
+        //GetComponent<Renderer>().sharedMaterials = mats.ToArray();
 
-        mc.ComputeMC();
-        GetComponent<MeshFilter>().mesh = mc.mesh;
-        GetComponent<Renderer>().sharedMaterials = mats.ToArray();
+        /////////////使用mcshader//////////
+        ///
+
+        if (McShader)
+        {
+            UseMCshader mc = new UseMCshader(SB, McShader);
+            mc.ComputeMC();
+            GetComponent<MeshFilter>().mesh = mc.mesh;
+            GetComponent<Renderer>().sharedMaterials = mats.ToArray();
+        }
+        else
+        {
+            print("need compute shader");
+        }
+
+        ///
+
+
+
+
+
 
         stopwatch.Stop();
         print("update timer: " + stopwatch.ElapsedTicks);

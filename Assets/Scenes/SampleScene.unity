@@ -532,6 +532,7 @@ MonoBehaviour:
   isEditor: 0
   operationType: 0
   living: 0
+  McShader: {fileID: 7200000, guid: 13297aebaf5093947b89fea6464fbcb4, type: 3}
 --- !u!23 &1804293748
 MeshRenderer:
   m_ObjectHideFlags: 0
