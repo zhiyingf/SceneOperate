@@ -17,12 +17,12 @@ public interface IMarching
     /// <summary>
     /// Marching cube min point
     /// </summary>
-    Vector3 McMin { get; set; }
+    //Vector3 McMin { get; set; }
 
     /// <summary>
     /// Marching cube max point
     /// </summary>
-    Vector3 McMax { get; set; }
+    //Vector3 McMax { get; set; }
 
     /// <summary>
     /// perform marching cube algorithm

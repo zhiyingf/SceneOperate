@@ -13,7 +13,7 @@ public class ObjSdfTable
     public ObjSdfTable(Vector3 whl)
     {
         Whl = whl;
-        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Constants.Step), (int)Mathf.Round(Whl.y / Constants.Step), (int)Mathf.Round(Whl.z / Constants.Step));
+        Ncells = new Vector3Int(Mathf.CeilToInt(Whl.x / Constants.Step), Mathf.CeilToInt(Whl.y / Constants.Step), Mathf.CeilToInt(Whl.z / Constants.Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
     }
 
@@ -21,7 +21,7 @@ public class ObjSdfTable
     public ObjSdfTable(Vector3 whl, bool flag)
     {
         Whl = whl;
-        Ncells = new Vector3Int((int)Mathf.Round(Whl.x / Constants.Step), (int)Mathf.Round(Whl.y / Constants.Step), (int)Mathf.Round(Whl.z / Constants.Step));
+        Ncells = new Vector3Int(Mathf.CeilToInt(Whl.x / Constants.Step), Mathf.CeilToInt(Whl.y / Constants.Step), Mathf.CeilToInt(Whl.z / Constants.Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
         if(flag) ComputeSphereSdf(1);
         else ComputeBoxSdf(new Vector3(1,1,1));

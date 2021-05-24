@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class UseMC 
@@ -65,17 +66,66 @@ public class UseMC
             }
         }
 
+        WriteSDF("bunnySDF.txt", Voxels);
+
+        //NumToString("bunnySDFstring.txt", Voxels);
     }
 
     public void ComputeMC()
     {
         Vector3Int Ncell = Npoint - Vector3Int.one;
-        Marching marching = new MarchingCubes(Ncell, McMax, McMin, 0.0f);
+        Marching marching = new MarchingCubes(Ncell, 0.0f);
         marching.Generate(Voxels, verts, indices);
         mesh.SetVertices(verts);
         mesh.SetTriangles(indices, 0);
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+    }
+
+
+    public void WriteSDF(string name, Vector4[] Voxels)
+    {
+        FileStream f = new FileStream(name, FileMode.Create);
+        BinaryWriter bw = new BinaryWriter(f);
+        int size = Voxels.Length;
+        for (int i = 0; i < size; i++)
+        {
+            //byte[] byArray = BitConverter.GetBytes(sdf[i]);
+            //bw.Write(byArray, 0, 4);
+            bw.Write(Voxels[i].x);
+            bw.Write(Voxels[i].y);
+            bw.Write(Voxels[i].z);
+            bw.Write(Voxels[i].w);
+        }
+
+        bw.Close();
+
+    }
+
+    public void NumToString(string name, Vector4[] Voxels)
+    {
+        string str = "";
+
+        int size = Voxels.Length;
+        for (int i = 0; i < size; i++)
+        {
+            
+            str += Voxels[i].x.ToString() + " ";
+            str += Voxels[i].y.ToString() + " ";
+            str += Voxels[i].z.ToString() + " ";
+            str += Voxels[i].w.ToString() + " ";
+        }
+
+        
+
+        //string pathout = "E:\\Users\\zhiyi\\SceneOperate\\" + name;
+
+        StreamWriter sw = new StreamWriter(name, true);
+        sw.WriteLine(str);
+        sw.Close();
+        sw.Dispose();
+
+        //return str;
     }
 
 

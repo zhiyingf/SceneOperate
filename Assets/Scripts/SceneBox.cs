@@ -24,7 +24,7 @@ public class SceneBox
         center = new Vector3(0, 0, 0);
         size = new Vector3(Constants.Width, Constants.Height, Constants.Lenght);
         sceneBox = new Bounds(center, size);
-        ncells = new Vector3Int((int)Mathf.Round(size.x / Constants.Step), (int)Mathf.Round(size.y / Constants.Step), (int)Mathf.Round(size.z / Constants.Step));
+        ncells = new Vector3Int(Mathf.CeilToInt(size.x / Constants.Step), Mathf.CeilToInt(size.y / Constants.Step), Mathf.CeilToInt(size.z / Constants.Step));
         boxMatrix = new float[ncells.x+1,ncells.y+1,ncells.z+1];
         //boxMatrix = new float[100, 100, 100];
         InitBoxMatrix(boxMatrix, ncells);
@@ -35,7 +35,7 @@ public class SceneBox
     {//加第一个物体 只有平移
         Vector3 sizeHalf = sdfObj.Whl / 2.0f;
         Vector3 pos = (obj.position - sizeHalf - sceneBox.min) / Constants.Step;
-        Vector3Int posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        Vector3Int posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
         SdfAssign(posBegin, posEnd, boxMatrix, sdfObj.Objsdf);
@@ -58,25 +58,25 @@ public class SceneBox
         Vector3 objBmax = pos + sizeHalf;
 
         //local box min max
-        localBoxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x), Mathf.Min(objAmin.y, objBmin.y), Mathf.Min(objAmin.z, objBmin.z));
-        localBoxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x), Mathf.Max(objAmax.y, objBmax.y), Mathf.Max(objAmax.z, objBmax.z));
+        localBoxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x) - 2 * Constants.Step, Mathf.Min(objAmin.y, objBmin.y) - 2 * Constants.Step, Mathf.Min(objAmin.z, objBmin.z) - 2 * Constants.Step);
+        localBoxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x) + 2 * Constants.Step, Mathf.Max(objAmax.y, objBmax.y) + 2 * Constants.Step, Mathf.Max(objAmax.z, objBmax.z) + 2 * Constants.Step);
 
         Vector3 boxSizef = (localBoxMax - localBoxMin) / Constants.Step;
-        Vector3Int boxSize = new Vector3Int((int)boxSizef.x+5, (int)boxSizef.y+5, (int)boxSizef.z+5);//bias = 5
+        Vector3Int boxSize = new Vector3Int((int)boxSizef.x, (int)boxSizef.y, (int)boxSizef.z);//bias = 4
 
         float[,,] box = new float[boxSize.x + 1, boxSize.y + 1, boxSize.z + 1];
         InitBoxMatrix(box, boxSize);
 
         //objB in box begin position
         pos = (objBmin - localBoxMin) / Constants.Step;
-        posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         posEnd = sdfObjB.Ncells + posBegin;
 
         SdfAssign(posBegin, posEnd, box, sdfObjB.Objsdf);
 
         //box in sceneBox
         pos = (localBoxMin - sceneBox.min) / Constants.Step;
-        posBegin = new Vector3Int((int)Mathf.Round(pos.x), (int)Mathf.Round(pos.y), (int)Mathf.Round(pos.z));
+        posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         posEnd = boxSize + posBegin;
 
         SdfCompute(posBegin, posEnd, type, box);

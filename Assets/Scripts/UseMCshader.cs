@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class UseMCshader
 {
-    const int threadGroupSize = 8;
+    const int threadGroupSize = 10;
 
     ComputeShader McShader;
     ComputeBuffer voxelsBuffer;
@@ -41,14 +42,17 @@ public class UseMCshader
                 }
             }
         }
+
+        WriteSDF("bunnySDF.txt", Voxels);
+
+        //NumToString("bunnySDFstring.txt", Voxels);
     }
 
     public void ComputeMC()
     {
         InitBuffers();
 
-        Vector3Int ncell = Npoint - Vector3Int.one;
-        Vector3Int numThreadsPerAxis = new Vector3Int(Mathf.CeilToInt(ncell.x / threadGroupSize), Mathf.CeilToInt(ncell.y / threadGroupSize), Mathf.CeilToInt(ncell.z / threadGroupSize));
+        Vector3Int numThreadsPerAxis = new Vector3Int(Mathf.CeilToInt(Npoint.x / (float)threadGroupSize), Mathf.CeilToInt(Npoint.y / (float)threadGroupSize), Mathf.CeilToInt(Npoint.z / (float)threadGroupSize));
 
         int[] xyzAxis = { Npoint.x, Npoint.y, Npoint.z };
         McShader.SetInts("numPointsXyzAxis", xyzAxis);
@@ -92,11 +96,11 @@ public class UseMCshader
 
     private void InitBuffers()
     {
-        //int numPoints = Npoint.x * Npoint.y * Npoint.z;
+        int numPoints = Npoint.x * Npoint.y * Npoint.z;
         int numVoxels = (Npoint.x - 1) * (Npoint.y - 1) * (Npoint.z - 1);
         int maxTriangleCount = numVoxels * 5;
 
-        voxelsBuffer = new ComputeBuffer(Voxels.Length, sizeof(float) * 4);
+        voxelsBuffer = new ComputeBuffer(numPoints, sizeof(float) * 4);//Voxels.Length
         voxelsBuffer.SetData(Voxels);
 
         triangleBuffer = new ComputeBuffer(maxTriangleCount, sizeof(float) * 3 * 3, ComputeBufferType.Append);
@@ -136,6 +140,52 @@ public class UseMCshader
                 }
             }
         }
+    }
+
+
+    public void WriteSDF(string name, Vector4[] Voxels)
+    {
+        FileStream f = new FileStream(name, FileMode.Create);
+        BinaryWriter bw = new BinaryWriter(f);
+        int size = Voxels.Length;
+        for (int i = 0; i < size; i++)
+        {
+            //byte[] byArray = BitConverter.GetBytes(sdf[i]);
+            //bw.Write(byArray, 0, 4);
+            bw.Write(Voxels[i].x);
+            bw.Write(Voxels[i].y);
+            bw.Write(Voxels[i].z);
+            bw.Write(Voxels[i].w);
+        }
+
+        bw.Close();
+
+    }
+
+    public void NumToString(string name, Vector4[] Voxels)
+    {
+        string str = "";
+
+        int size = Voxels.Length;
+        for (int i = 0; i < size; i++)
+        {
+
+            str += Voxels[i].x.ToString() + " ";
+            str += Voxels[i].y.ToString() + " ";
+            str += Voxels[i].z.ToString() + " ";
+            str += Voxels[i].w.ToString() + " ";
+        }
+
+
+
+        //string pathout = "E:\\Users\\zhiyi\\SceneOperate\\" + name;
+
+        StreamWriter sw = new StreamWriter(name, true);
+        sw.WriteLine(str);
+        sw.Close();
+        sw.Dispose();
+
+        //return str;
     }
 
 }

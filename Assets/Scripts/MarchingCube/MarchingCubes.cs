@@ -6,7 +6,7 @@ public class MarchingCubes : Marching
 {
     private Vector3[] EdgeVertex { get; set; }
 
-    public MarchingCubes(Vector3Int ncells, Vector3 mcMax, Vector3 mcMin, float surface = 0.5f) : base(ncells, mcMax, mcMin, surface)
+    public MarchingCubes(Vector3Int ncells, float surface = 0.5f) : base(ncells, surface)
     {
         EdgeVertex = new Vector3[12];
     }

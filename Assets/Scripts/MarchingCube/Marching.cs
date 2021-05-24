@@ -8,9 +8,9 @@ public abstract class Marching : IMarching
 
     public Vector3Int Ncells { get; set; }
 
-    public Vector3 McMin { get; set; }
+    //public Vector3 McMin { get; set; }
 
-    public Vector3 McMax { get; set; }
+    //public Vector3 McMax { get; set; }
 
     private Vector4[] Cube { get; set; }
 
@@ -19,18 +19,18 @@ public abstract class Marching : IMarching
     /// </summary>
     protected int[] WindingOrder { get; private set; }
 
-    protected Vector3 StepSize { get; private set; }
+    //protected Vector3 StepSize { get; private set; }
 
-    public Marching(Vector3Int ncells , Vector3 mcMax , Vector3 mcMin , float surface = 0.5f)
+    public Marching(Vector3Int ncells , float surface = 0.5f)
     {
         Ncells = ncells;
-        McMax = mcMax;
-        McMin = mcMin;
+        //McMax = mcMax;
+        //McMin = mcMin;
         Surface = surface;
         Cube = new Vector4[8];
         WindingOrder = new int[] { 0, 1, 2 };
-        StepSize = McMax - McMin;
-        StepSize = new Vector3(StepSize.x / Ncells.x, StepSize.y / Ncells.y, StepSize.z / Ncells.z);
+        //StepSize = McMax - McMin;
+        //StepSize = new Vector3(StepSize.x / Ncells.x, StepSize.y / Ncells.y, StepSize.z / Ncells.z);
     }
 
     public virtual void Generate(IList<Vector4> voxels, IList<Vector3> verts, IList<int> indices)
