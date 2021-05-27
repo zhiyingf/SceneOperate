@@ -52,9 +52,7 @@ public abstract class Marching : IMarching
         int x, y, z, i;
         int ix, iy, iz;
 
-        //int YtimeZ = (Ncells.y + 1) * (Ncells.z + 1);
-
-        //-1? -0?
+        
         for (x = 0; x < Ncells.x ; x++)
         {
             for (y = 0; y < Ncells.y ; y++)
@@ -71,17 +69,6 @@ public abstract class Marching : IMarching
                         Cube[i] = voxels[ix + iy * (Ncells.x + 1) + iz * (Ncells.x + 1) * (Ncells.y + 1)];
                         //Cube[i] = voxels[iz + iy * (Ncells.z + 1) + ix * (Ncells.y + 1) * (Ncells.z + 1)];
                     }
-
-                    //int ind = x * YtimeZ + y * (Ncells.z + 1) + z;
-                    //Cube[0] = voxels[ind];
-                    //Cube[1] = voxels[ind + YtimeZ];
-                    //Cube[2] = voxels[ind + YtimeZ + 1];
-                    //Cube[3] = voxels[ind + 1];
-                    //Cube[4] = voxels[ind + (Ncells.z + 1)];
-                    //Cube[5] = voxels[ind + YtimeZ + (Ncells.z + 1)];
-                    //Cube[6] = voxels[ind + YtimeZ + (Ncells.z + 1) + 1];
-                    //Cube[7] = voxels[ind + (Ncells.z + 1) + 1];
-
 
                     //Perform algorithm
                     March(Cube, verts, indices);
@@ -133,6 +120,8 @@ public abstract class Marching : IMarching
     {
             {0, 0, 0},{1, 0, 0},{1, 1, 0},{0, 1, 0},
             {0, 0, 1},{1, 0, 1},{1, 1, 1},{0, 1, 1}
+            //{0, 0, 0},{1, 0, 0},{1, 0, 1},{0, 0, 1},
+            //{0, 1, 0},{1, 1, 0},{1, 1, 1},{0, 1, 1}
     };
 
 

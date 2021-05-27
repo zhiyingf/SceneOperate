@@ -61,6 +61,7 @@ public class UseMC
                 {
                     Vector3 coord = new Vector3(McMin.x + x * Constants.Step, McMin.y + y * Constants.Step, McMin.z + z * Constants.Step);
                     int idx = x + y * Npoint.x + z * Npoint.y * Npoint.x;
+                    //int idx = z + y * Npoint.z + x * Npoint.y * Npoint.z;
                     Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, SB.boxMatrix[xx, yy, zz]);
                 }
             }
@@ -76,6 +77,9 @@ public class UseMC
         Vector3Int Ncell = Npoint - Vector3Int.one;
         Marching marching = new MarchingCubes(Ncell, 0.0f);
         marching.Generate(Voxels, verts, indices);
+
+        //A mesh in unity can only be made up of 65000 verts.
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         mesh.SetVertices(verts);
         mesh.SetTriangles(indices, 0);
         mesh.RecalculateBounds();

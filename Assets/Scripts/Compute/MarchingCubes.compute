@@ -32,6 +32,19 @@ void March(int3 id : SV_DispatchThreadID)
         return;
     }
 
+
+    // 8 corners of the current cube
+    /*float4 cubeCorners[8] = {
+        points[indexFromCoord(id.x, id.y, id.z)],
+        points[indexFromCoord(id.x + 1, id.y, id.z)],
+        points[indexFromCoord(id.x + 1, id.y, id.z + 1)],
+        points[indexFromCoord(id.x, id.y, id.z + 1)],
+        points[indexFromCoord(id.x, id.y + 1, id.z)],
+        points[indexFromCoord(id.x + 1, id.y + 1, id.z)],
+        points[indexFromCoord(id.x + 1, id.y + 1, id.z + 1)],
+        points[indexFromCoord(id.x, id.y + 1, id.z + 1)]
+    };*/
+
     // 8 corners of the current cube
     float4 cubeCorners[8] = {
         points[indexFromCoord(id.x, id.y, id.z)],//(0,0,0)

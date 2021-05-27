@@ -69,10 +69,17 @@ public class SceneSDF : MonoBehaviour
             Vector3 sizeB = operationB.GetComponent<Renderer>().bounds.size;
             //print(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
             //print(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));
+
+            //bunny  sphere
             objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
             objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
 
             ReadSDF(operationA.name, objsdfA.Objsdf);
+
+            //sphere sphere
+            //objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)), true);
+            //objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
+
 
 
             filterA = operationA.GetComponent<MeshFilter>();
@@ -182,25 +189,25 @@ public class SceneSDF : MonoBehaviour
         //UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
 
         //MC 局部更新
-        UseMC mc = new UseMC(SB);
-        mc.ComputeMC();
-        GetComponent<MeshFilter>().mesh = mc.mesh;
-        GetComponent<Renderer>().sharedMaterials = mats.ToArray();
+        //UseMC mc = new UseMC(SB);
+        //mc.ComputeMC();
+        //GetComponent<MeshFilter>().mesh = mc.mesh;
+        //GetComponent<Renderer>().sharedMaterials = mats.ToArray();
 
         /////////////使用mcshader//////////
         ///
 
-        //if (McShader)
-        //{
-        //    UseMCshader mc = new UseMCshader(SB, McShader);
-        //    mc.ComputeMC();
-        //    GetComponent<MeshFilter>().mesh = mc.mesh;
-        //    GetComponent<Renderer>().sharedMaterials = mats.ToArray();
-        //}
-        //else
-        //{
-        //    print("need compute shader");
-        //}
+        if (McShader)
+        {
+            UseMCshader mc = new UseMCshader(SB, McShader);
+            mc.ComputeMC();
+            GetComponent<MeshFilter>().mesh = mc.mesh;
+            GetComponent<Renderer>().sharedMaterials = mats.ToArray();
+        }
+        else
+        {
+            print("need compute shader");
+        }
 
         ///
 

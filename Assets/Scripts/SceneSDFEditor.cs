@@ -32,6 +32,38 @@ public class SceneSDFEditor : Editor
             scenesdf.ExecuteOnClick();
         }
 
+
+        if (GUILayout.Button("Save Prefab", new GUILayoutOption[0]))
+        {
+            //string text = EditorUtility.SaveFilePanelInProject("Save Result", scenesdf.gameObject.name, "prefab", "Please select where do you want to save the result?");
+            string text = EditorUtility.SaveFilePanelInProject("Save Result", scenesdf.gameObject.name, "obj", "Please select where do you want to save the result?");
+
+            if (text != null)
+            {
+                //保存预制体
+                //GameObject gameObject = (GameObject)Instantiate(scenesdf.gameObject);
+                //DestroyImmediate(gameObject.GetComponent<SceneSDF>());
+                //AssetDatabase.Refresh();
+                //Mesh sharedMesh = scenesdf.GetComponent<MeshFilter>().sharedMesh;
+                //if (!EditorUtility.IsPersistent(sharedMesh))
+                //{
+                //    if (sharedMesh.name == "")
+                //    {
+                //        sharedMesh.name = "Result";
+                //    }
+                //    AssetDatabase.CreateAsset(sharedMesh, text.Replace(".prefab", "_Mesh.asset"));
+                //}
+                //PrefabUtility.SaveAsPrefabAsset(gameObject, text);
+                //AssetDatabase.Refresh();
+                //DestroyImmediate(gameObject);
+
+
+                //保存网格.obj
+                GameObject gameObject = (GameObject)Instantiate(scenesdf.gameObject);
+                ExportMesh.ExportMeshToObj(gameObject, text);
+            }
+        }
+
         if (GUI.changed)
         {
             EditorUtility.SetDirty(target);
