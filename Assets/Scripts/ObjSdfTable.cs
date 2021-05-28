@@ -7,6 +7,7 @@ public class ObjSdfTable
     public Vector3 Whl;
     public Vector3Int Ncells;
     public float[] Objsdf;
+    public Vector3[] NormalSDF;
 
 
     //General SDF for preloaded objects
@@ -15,6 +16,9 @@ public class ObjSdfTable
         Whl = whl;
         Ncells = new Vector3Int(Mathf.CeilToInt(Whl.x / Constants.Step), Mathf.CeilToInt(Whl.y / Constants.Step), Mathf.CeilToInt(Whl.z / Constants.Step));
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
+
+        //添加SDF的法线信息
+        NormalSDF = new Vector3[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
     }
 
     //Calculate the SDF of the circle using implicit functions

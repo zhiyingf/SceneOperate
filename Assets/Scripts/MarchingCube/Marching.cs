@@ -8,10 +8,6 @@ public abstract class Marching : IMarching
 
     public Vector3Int Ncells { get; set; }
 
-    //public Vector3 McMin { get; set; }
-
-    //public Vector3 McMax { get; set; }
-
     private Vector4[] Cube { get; set; }
 
     /// <summary>

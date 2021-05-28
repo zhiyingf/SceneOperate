@@ -15,16 +15,6 @@ public interface IMarching
     Vector3Int Ncells { get; set; }
 
     /// <summary>
-    /// Marching cube min point
-    /// </summary>
-    //Vector3 McMin { get; set; }
-
-    /// <summary>
-    /// Marching cube max point
-    /// </summary>
-    //Vector3 McMax { get; set; }
-
-    /// <summary>
     /// perform marching cube algorithm
     /// </summary>
     /// <param name="voxels">the cube value</param>

@@ -64,21 +64,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\BooleanType.cs" />
-    <Compile Include="Assets\Scripts\EditorUtil.cs" />
-    <Compile Include="Assets\Scripts\ExportMesh.cs" />
     <Compile Include="Assets\Scripts\HyperparaSet.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\IMarching.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\Marching.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\MarchingCubes.cs" />
     <Compile Include="Assets\Scripts\ObjSdfTable.cs" />
+    <Compile Include="Assets\Scripts\SaveMesh\EditorUtil.cs" />
+    <Compile Include="Assets\Scripts\SaveMesh\ExportMesh.cs" />
     <Compile Include="Assets\Scripts\SceneBox.cs" />
     <Compile Include="Assets\Scripts\SceneSDF.cs" />
     <Compile Include="Assets\Scripts\SceneSDFEditor.cs" />
     <Compile Include="Assets\Scripts\UseMC.cs" />
     <Compile Include="Assets\Scripts\UseMCshader.cs" />
+    <None Include="Assets\SDF\bunnyNormalSDF50.txt" />
     <None Include="Assets\Scripts\Compute\MarchingCubes.compute" />
+    <None Include="Assets\SDF\bunnyNormalSDF40.txt" />
     <None Include="Assets\SDF\bunny200.txt" />
     <None Include="Assets\SDF\bunny40.txt" />
+    <None Include="Assets\SDF\bunnyNormalSDF20.txt" />
+    <None Include="Assets\SDF\bunnyNormalSDF100.txt" />
     <None Include="Assets\SDF\bunny50.txt" />
     <None Include="Assets\SDF\bunny20.txt" />
     <None Include="Assets\SDF\bunny100.txt" />
