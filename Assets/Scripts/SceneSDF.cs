@@ -76,7 +76,7 @@ public class SceneSDF : MonoBehaviour
 
             ReadSDF(operationA.name, objsdfA.Objsdf);
 
-            ReadNormalSDF(operationA.name, objsdfA.NormalSDF);
+            //ReadNormalSDF(operationA.name, objsdfA.NormalSDF);
 
 
             //sphere sphere
@@ -218,10 +218,8 @@ public class SceneSDF : MonoBehaviour
 
 
 
-
-
         stopwatch.Stop();
-        print("update timer: " + stopwatch.ElapsedTicks);
+        print("update timer: " + stopwatch.ElapsedMilliseconds);//ElapsedMilliseconds  ElapsedTicks时间刻度
 
         //print(NumToString(SB.boxMatrix));
         //NumToString(SB.boxMatrix, "boxMatrix.txt");
@@ -274,7 +272,6 @@ public class SceneSDF : MonoBehaviour
             FileAccess.Read, FileShare.Read);
         // Create an instance of BinaryReader that can
         // read bytes from the FileStream.
-
         using (BinaryReader br = new BinaryReader(f))
         {
             int size = sizeof(float) * sdf.Length;
@@ -286,8 +283,6 @@ public class SceneSDF : MonoBehaviour
                 sdf[j] = BitConverter.ToSingle(bb, i);
             }
         }
-        //print(sdf[0]);
-        //print(sdf[9]);
     }
 
     public void ReadNormalSDF(string name, Vector3[] normalSDF)
@@ -304,10 +299,9 @@ public class SceneSDF : MonoBehaviour
             FileAccess.Read, FileShare.Read);
         // Create an instance of BinaryReader that can
         // read bytes from the FileStream.
-
         using (BinaryReader br = new BinaryReader(f))
         {
-            int size = sizeof(float) * normalSDF.Length;
+            int size = 3 * sizeof(float) * normalSDF.Length;
             byte[] bb = new byte[size];
             br.Read(bb, 0, size);
 
@@ -318,11 +312,9 @@ public class SceneSDF : MonoBehaviour
                 v3.y = BitConverter.ToSingle(bb, i+4);
                 v3.z = BitConverter.ToSingle(bb, i+8);
                 normalSDF[j] = v3;
-
             }
+            
         }
-        print(normalSDF[0]);//0 1 2
-        print(normalSDF[132650]);//9 10 11
     }
 
 

@@ -18,7 +18,7 @@ public class ObjSdfTable
         Objsdf = new float[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
 
         //添加SDF的法线信息
-        NormalSDF = new Vector3[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
+        //NormalSDF = new Vector3[(Ncells.x + 1) * (Ncells.y + 1) * (Ncells.z + 1)];
     }
 
     //Calculate the SDF of the circle using implicit functions

@@ -26,7 +26,6 @@ public class SceneBox
         sceneBox = new Bounds(center, size);
         ncells = new Vector3Int(Mathf.CeilToInt(size.x / Constants.Step), Mathf.CeilToInt(size.y / Constants.Step), Mathf.CeilToInt(size.z / Constants.Step));
         boxMatrix = new float[ncells.x+1,ncells.y+1,ncells.z+1];
-        //boxMatrix = new float[100, 100, 100];
         InitBoxMatrix(boxMatrix, ncells);
     }
 
