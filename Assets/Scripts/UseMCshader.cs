@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
-public class UseMCshader
+public class UseMcShader
 {
-    const int threadGroupSize = 10;
+    const int threadGroupSize = 8;
 
     ComputeShader McShader;
     ComputeBuffer voxelsBuffer;
@@ -16,35 +14,33 @@ public class UseMCshader
     Vector3Int Npoint;//Npoint = ncell + Vector3Int.one;
     Vector4[] Voxels;
     Vector3 McMin;
-    Vector3 McMax;
 
     /// <summary>
     /// MC 局部更新
     /// </summary>
     /// <param name="SB"></param>
-    public UseMCshader(SceneBox SB, ComputeShader mcShader)
+    public UseMcShader(SceneBox SB, ComputeShader mcShader)
     {
         McShader = mcShader;
-        Npoint = SB.posEnd - SB.posBegin + Vector3Int.one;
+        Npoint = SB.ncells + Vector3Int.one;
         McMin = SB.localBoxMin;
-        McMax = SB.localBoxMax;
         Voxels = new Vector4[Npoint.x * Npoint.y * Npoint.z];
 
-        for (int x = 0, xx = SB.posBegin.x; x < Npoint.x; x++, xx++)
+        for (int x = 0; x < Npoint.x; x++)
         {
-            for (int y = 0, yy = SB.posBegin.y; y < Npoint.y; y++, yy++)
+            for (int y = 0; y < Npoint.y; y++)
             {
-                for (int z = 0, zz = SB.posBegin.z; z < Npoint.z; z++, zz++)
+                for (int z = 0; z < Npoint.z; z++)
                 {
                     Vector3 coord = new Vector3(McMin.x + x * Constants.Step, McMin.y + y * Constants.Step, McMin.z + z * Constants.Step);
                     int idx = x + y * Npoint.x + z * Npoint.y * Npoint.x;
                     //int idx = z + y * Npoint.z + x * Npoint.y * Npoint.z;
-                    Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, SB.boxMatrix[xx, yy, zz]);
+                    Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, SB.boxMatrix[x, y, z]);
                 }
             }
         }
 
-        WriteSDF("bunnySDF.txt", Voxels);
+        //WriteSDF("bunnySDF.txt", Voxels);
 
         //NumToString("bunnySDFstring.txt", Voxels);
     }

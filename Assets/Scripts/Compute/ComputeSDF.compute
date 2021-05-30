@@ -1,0 +1,52 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Union
+#pragma kernel Subtract
+#pragma kernel Intersection
+
+static const int numThreads = 8;
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWStructuredBuffer<float> sdfA;
+RWStructuredBuffer<float> sdfB;
+
+int3 numPointsXyzAxis;
+
+int indexFromCoord(int x, int y, int z) {
+    return z * numPointsXyzAxis.y * numPointsXyzAxis.x + y * numPointsXyzAxis.x + x;
+}
+
+[numthreads(numThreads, numThreads, numThreads)]
+void Union(int3 id : SV_DispatchThreadID)
+{
+    // Stop one point before the end because voxel includes neighbouring points
+    if (id.x >= numPointsXyzAxis.x || id.y >= numPointsXyzAxis.y || id.z >= numPointsXyzAxis.z) {
+        return;
+    }
+    sdfA[indexFromCoord(id.x, id.y, id.z)] = min(sdfA[indexFromCoord(id.x, id.y, id.z)], sdfB[indexFromCoord(id.x, id.y, id.z)]);
+}
+
+
+[numthreads(numThreads, numThreads, numThreads)]
+void Subtract(int3 id : SV_DispatchThreadID)
+{
+    // Stop one point before the end because voxel includes neighbouring points
+    if (id.x >= numPointsXyzAxis.x || id.y >= numPointsXyzAxis.y || id.z >= numPointsXyzAxis.z) {
+        return;
+    }
+    sdfA[indexFromCoord(id.x, id.y, id.z)] = max(sdfA[indexFromCoord(id.x, id.y, id.z)], -sdfB[indexFromCoord(id.x, id.y, id.z)]);
+
+}
+
+
+[numthreads(numThreads, numThreads, numThreads)]
+void Intersection(int3 id : SV_DispatchThreadID)
+{
+    // Stop one point before the end because voxel includes neighbouring points
+    if (id.x >= numPointsXyzAxis.x || id.y >= numPointsXyzAxis.y || id.z >= numPointsXyzAxis.z) {
+        return;
+    }
+    sdfA[indexFromCoord(id.x, id.y, id.z)] = max(sdfA[indexFromCoord(id.x, id.y, id.z)], sdfB[indexFromCoord(id.x, id.y, id.z)]);
+
+}
+

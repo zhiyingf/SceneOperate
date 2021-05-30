@@ -38,6 +38,7 @@ public class SceneSDF : MonoBehaviour
     private List<Material> mats = new List<Material>();
 
     public ComputeShader McShader;
+    public ComputeShader SdfShader;
 
     //BooleanCompute class
     //private BooleanCompute sdfCompute;
@@ -56,6 +57,8 @@ public class SceneSDF : MonoBehaviour
     public void Init()
     {
         SB = new SceneBox();
+
+        //McShader = 
 
         //记录物体最初的位置和状态
         if (operationA != null && operationB != null)
@@ -174,22 +177,18 @@ public class SceneSDF : MonoBehaviour
         System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        SB.InitBoxMatrix(SB.boxMatrix, SB.ncells);
         //SB.UpdateSDF(operationA, objsdfA);
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
-        SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType);
-
+        SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType, SdfShader);
+        print(operationType.ToString());
         ///
-        Vector3Int Npoint = SB.posEnd - SB.posBegin + Vector3Int.one;
-        print("Npoint " + Npoint);
-        print("Npoint " + Npoint.x * Npoint.y * Npoint.z);
-        print("localBoxMin " + SB.localBoxMin);
+        //Vector3Int Npoint = SB.ncells + Vector3Int.one;
+        //print("Npoint " + Npoint);
+        //print("Npoint " + Npoint.x * Npoint.y * Npoint.z);
+        //print("localBoxMin " + SB.localBoxMin);
         ///
 
-
-        //MC 全局更新
-        //UseMC mc = new UseMC(SB.ncells, SB.sceneBox.max, SB.sceneBox.min, SB.boxMatrix);
 
         //MC 局部更新
         //UseMC mc = new UseMC(SB);
@@ -203,7 +202,7 @@ public class SceneSDF : MonoBehaviour
 
         if (McShader)
         {
-            UseMCshader mc = new UseMCshader(SB, McShader);
+            UseMcShader mc = new UseMcShader(SB, McShader);
             mc.ComputeMC();
             GetComponent<MeshFilter>().mesh = mc.mesh;
             GetComponent<Renderer>().sharedMaterials = mats.ToArray();
@@ -260,7 +259,7 @@ public class SceneSDF : MonoBehaviour
     /// <param name="sdf"></param>
     public void ReadSDF(string name, float[] sdf)
     {
-        name = "Assets\\SDF\\" + name + "50.txt";
+        name = "Assets\\SDF\\" + name + "100.txt";
         //print(System.IO.Directory.GetCurrentDirectory());
         if (!File.Exists(name))
         {
