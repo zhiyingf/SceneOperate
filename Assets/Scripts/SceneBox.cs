@@ -81,11 +81,11 @@ public class SceneBox
 
         SdfAssign(posBegin, posEnd, box, sdfObjB.Objsdf);
 
-        //SdfCompute(type, box);
+        SdfCompute(type, box);
 
         //use sdf shader
-        UseSdfShader useSdf = new UseSdfShader(ncells, sdfShader, boxMatrix, box);
-        useSdf.ComputeSDF(boxMatrix, type);
+        //UseSdfShader useSdf = new UseSdfShader(ncells, sdfShader, boxMatrix, box);
+        //useSdf.ComputeSDF(boxMatrix, type);
     }
 
 
