@@ -73,11 +73,20 @@ public class SceneSDF : MonoBehaviour
             //print(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
             //print(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));
 
+            ////bunny  sphere
+            //objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
+            //objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
+
+            //ReadSDF(operationA.name, objsdfA.Objsdf);
+
+
             //bunny  sphere
             objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
-            objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
+            objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));//sphere
 
             ReadSDF(operationA.name, objsdfA.Objsdf);
+            ReadSDF(operationB.name, objsdfB.Objsdf);
+
 
             //ReadNormalSDF(operationA.name, objsdfA.NormalSDF);
 
@@ -259,7 +268,7 @@ public class SceneSDF : MonoBehaviour
     /// <param name="sdf"></param>
     public void ReadSDF(string name, float[] sdf)
     {
-        name = "Assets\\SDF\\" + name + "100.txt";
+        name = "Assets\\SDF\\" + name + "-50.txt";
         //print(System.IO.Directory.GetCurrentDirectory());
         if (!File.Exists(name))
         {
