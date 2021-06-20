@@ -15,6 +15,7 @@ public class SceneSDF : MonoBehaviour
     public SceneBox SB;
     ObjSdfTable objsdfA;
     ObjSdfTable objsdfB;
+
     public Transform operationA;///???
     public Transform operationB;
 
@@ -24,12 +25,17 @@ public class SceneSDF : MonoBehaviour
     //A lock that controls the execution of a program
     public bool living = false;
 
+    public ComputeShader McShader;
+    public ComputeShader SdfShader;
+
     //late state
+    private string nameA;
     private MeshFilter filterA;
     private Vector3 positionA;
     private Quaternion rotationA;
     private Vector3 scaleA;
 
+    private string nameB;
     private MeshFilter filterB;
     private Vector3 positionB;
     private Quaternion rotationB;
@@ -37,8 +43,7 @@ public class SceneSDF : MonoBehaviour
 
     private List<Material> mats = new List<Material>();
 
-    public ComputeShader McShader;
-    public ComputeShader SdfShader;
+    
 
     //BooleanCompute class
     //private BooleanCompute sdfCompute;
@@ -50,6 +55,29 @@ public class SceneSDF : MonoBehaviour
         Init();
     }
 
+    //use ref/out
+    public void ObjAssign(in Transform operation,ref string name, ref ObjSdfTable objsdf, ref MeshFilter filter, ref Vector3 position, ref Quaternion rotation, ref Vector3 scale)
+    {
+        name = operation.name;
+
+        ///物体包围盒中心在原点
+        ///小数处理
+        ///max<0.5----0.5----size:1.0 (max<0.5 则 0.0 < size < 1.0)
+        ///max>0.5----1.0----size:2.0 (max>0.5 则 1.0 < size < 2.0)
+        ///
+        Vector3 size = operation.GetComponent<Renderer>().bounds.size;
+        objsdf = new ObjSdfTable(new Vector3(Mathf.Ceil(size.x), Mathf.Ceil(size.y), Mathf.Ceil(size.z)));
+        ReadSDF(operation.name, objsdf.Objsdf);
+
+        filter = operation.GetComponent<MeshFilter>();
+        position = filter.transform.position;
+        rotation = filter.transform.rotation;
+        scale = filter.transform.lossyScale;
+
+        mats.Clear();
+        mats.AddRange(operationA.GetComponent<Renderer>().sharedMaterials);
+    }
+
     /// <summary>
     /// 1.初始化体素场，加载两个物体对应的SDF值
     /// 2.记录两个物体的位置、角度、大致范围
@@ -57,71 +85,34 @@ public class SceneSDF : MonoBehaviour
     public void Init()
     {
         SB = new SceneBox();
-
-        //McShader = 
-
-        //记录物体最初的位置和状态
-        if (operationA != null && operationB != null)
+        if (operationA != null)
         {
-            ///物体包围盒中心在原点
-            ///小数处理
-            ///max<0.5----0.5----size:1.0 (max<0.5 则 0.0 < size < 1.0)
-            ///max>0.5----1.0----size:2.0 (max>0.5 则 1.0 < size < 2.0)
-
-            Vector3 sizeA = operationA.GetComponent<Renderer>().bounds.size;
-            Vector3 sizeB = operationB.GetComponent<Renderer>().bounds.size;
-            //print(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
-            //print(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));
-
-            ////bunny  sphere
-            //objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
-            //objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
-
-            //ReadSDF(operationA.name, objsdfA.Objsdf);
-
-
-            //bunny  sphere
-            objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)));
-            objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)));//sphere
-
-            ReadSDF(operationA.name, objsdfA.Objsdf);
-            ReadSDF(operationB.name, objsdfB.Objsdf);
-
-
-            //ReadNormalSDF(operationA.name, objsdfA.NormalSDF);
-
-
-            //sphere sphere
-            //objsdfA = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeA.x), Mathf.Ceil(sizeA.y), Mathf.Ceil(sizeA.z)), true);
-            //objsdfB = new ObjSdfTable(new Vector3(Mathf.Ceil(sizeB.x), Mathf.Ceil(sizeB.y), Mathf.Ceil(sizeB.z)), true);//sphere
-
-
-
-            filterA = operationA.GetComponent<MeshFilter>();
-            positionA = filterA.transform.position;
-            rotationA = filterA.transform.rotation;
-            scaleA = filterA.transform.lossyScale;
-
-            filterB = operationB.GetComponent<MeshFilter>();
-            positionB = filterB.transform.position;
-            rotationB = filterB.transform.rotation;
-            scaleB = filterB.transform.lossyScale;
-
-            mats.Clear();
-            mats.AddRange(operationA.GetComponent<Renderer>().sharedMaterials);
-            //mats.AddRange(operationB.GetComponent<Renderer>().sharedMaterials);
-
-            //&& Application.isEditor 
-            if (isEditor && Application.isPlaying)
-            {
-                StartCoroutine(Execute());
-            }
-
+            ObjAssign(operationA, ref nameA, ref objsdfA, ref filterA, ref positionA, ref rotationA, ref scaleA);
+        }
+        if (operationB != null)
+        {
+            ObjAssign(operationB, ref nameB, ref objsdfB, ref filterB, ref positionB, ref rotationB, ref scaleB);
         }
     }
+
     // Update is called once per frame
     public void Update()
     {
+        //更改operationA or operationB对应的需要数据更新
+        if (nameA != operationA.name || nameB != operationB.name)
+        {
+            StopAllCoroutines();
+            living = false;//必不可少 把锁打开
+            if (nameA != operationA.name)
+            {
+                ObjAssign(operationA, ref nameA, ref objsdfA, ref filterA, ref positionA, ref rotationA, ref scaleA);
+            }
+            if (nameB != operationB.name)
+            {
+                ObjAssign(operationB, ref nameB, ref objsdfB, ref filterB, ref positionB, ref rotationB, ref scaleB);
+            }
+        }
+
         ///作用不大？？？ && Application.isEditor 
         if (!living && isEditor&& Application.isPlaying)
         {
@@ -141,17 +132,18 @@ public class SceneSDF : MonoBehaviour
         bool changeA = operationA.transform.position != positionA || operationA.transform.rotation != rotationA || operationA.transform.lossyScale != scaleA;
         bool changeB = operationB.transform.position != positionB || operationB.transform.rotation != rotationB || operationB.transform.lossyScale != scaleB;
 
-        //保存两个物体上一次位置、方向、范围的变化
-        positionA = filterA.transform.position;
-        rotationA = filterA.transform.rotation;
-        scaleA = filterA.transform.lossyScale;
-
-        positionB = filterB.transform.position;
-        rotationB = filterB.transform.rotation;
-        scaleB = filterB.transform.lossyScale;
-
+        
         if (changeA||changeB)
         {
+            //保存两个物体上一次位置、方向、范围的变化
+            positionA = filterA.transform.position;
+            rotationA = filterA.transform.rotation;
+            scaleA = filterA.transform.lossyScale;
+
+            positionB = filterB.transform.position;
+            rotationB = filterB.transform.rotation;
+            scaleB = filterB.transform.lossyScale;
+
             return true;
         }
         return false;
@@ -190,7 +182,7 @@ public class SceneSDF : MonoBehaviour
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
         SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType, SdfShader);
-        print(operationType.ToString());
+
         ///
         //Vector3Int Npoint = SB.ncells + Vector3Int.one;
         //print("Npoint " + Npoint);

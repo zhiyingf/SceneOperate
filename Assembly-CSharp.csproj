@@ -79,11 +79,17 @@
     <Compile Include="Assets\Scripts\UseSdfShader.cs" />
     <None Include="Assets\SDF\0092-50.txt" />
     <None Include="Assets\SDF\bunny-50.txt" />
+    <None Include="Assets\SDF\0098-50.txt" />
     <None Include="Assets\Scripts\Compute\MarchingCubes.compute" />
+    <None Include="Assets\SDF\0095-50.txt" />
+    <None Include="Assets\SDF\0094-50.txt" />
+    <None Include="Assets\SDF\0099-50.txt" />
     <None Include="Assets\Material\DiffuseVertexLevel.shader" />
     <None Include="Assets\Material\DffusePixelLevel.shader" />
     <None Include="Assets\Scripts\Compute\Includes\MarchTables.compute" />
+    <None Include="Assets\SDF\0395-50.txt" />
     <None Include="Assets\Scripts\Compute\ComputeSDF.compute" />
+    <None Include="Assets\SDF\0096-50.txt" />
     <None Include="Assets\SDF\0001-50.txt" />
     <None Include="Assets\SDF\0002-50.txt" />
     <None Include="Assets\Material\NewSurfaceShader.shader" />
