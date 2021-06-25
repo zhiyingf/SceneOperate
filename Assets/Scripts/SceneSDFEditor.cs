@@ -30,13 +30,13 @@ public class SceneSDFEditor : Editor
 
         GUILayout.Space(8.0f);
 
-        if (GUILayout.Button("UpdateMesh"))
+        if (GUILayout.Button("Update Mesh"))
         {
             scenesdf.ExecuteOnClick();
         }
 
 
-        if (GUILayout.Button("Save Prefab", new GUILayoutOption[0]))
+        if (GUILayout.Button("Save Mesh", new GUILayoutOption[0]))//Save Prefab
         {
             //string text = EditorUtility.SaveFilePanelInProject("Save Result", scenesdf.gameObject.name, "prefab", "Please select where do you want to save the result?");
             string text = EditorUtility.SaveFilePanelInProject("Save Result", scenesdf.gameObject.name, "obj", "Please select where do you want to save the result?");

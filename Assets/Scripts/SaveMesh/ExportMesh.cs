@@ -117,10 +117,12 @@ public sealed class ExportMesh
     /// <param name="buf"></param>
     private static void writeObjFile(StringBuilder buf,string path)
     {
-        string filePath = Path.Combine(path, EditorSceneManager.GetActiveScene().name + ".obj");
-        EditorUtil.SwapnDirectory(filePath);
+        //string filePath = Path.Combine(path, EditorSceneManager.GetActiveScene().name + ".obj");
+        //EditorUtil.SwapnDirectory(filePath);
 
-        using (StreamWriter writer = new StreamWriter(filePath))
+        EditorUtil.SwapnDirectory(path);
+
+        using (StreamWriter writer = new StreamWriter(path))
         {
             writer.Write(buf.ToString());
         }
