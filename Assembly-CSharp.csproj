@@ -63,8 +63,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\AttachScriptable.cs" />
+    <Compile Include="Assets\Scripts\AttachScriptableEditor.cs" />
     <Compile Include="Assets\Scripts\BooleanType.cs" />
     <Compile Include="Assets\Scripts\HyperparaSet.cs" />
+    <Compile Include="Assets\Scripts\ManagerScriptableObject.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\IMarching.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\Marching.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\MarchingCubes.cs" />
@@ -74,7 +77,7 @@
     <Compile Include="Assets\Scripts\SceneBox.cs" />
     <Compile Include="Assets\Scripts\SceneSDF.cs" />
     <Compile Include="Assets\Scripts\SceneSDFEditor.cs" />
-    <Compile Include="Assets\Scripts\SpawnManagerScritableObject.cs" />
+    <Compile Include="Assets\Scripts\SetScriptableObj.cs" />
     <Compile Include="Assets\Scripts\UseMc.cs" />
     <Compile Include="Assets\Scripts\UseMcShader.cs" />
     <Compile Include="Assets\Scripts\UseSdfShader.cs" />

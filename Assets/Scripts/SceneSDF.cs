@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 
 //main scene
-[AddComponentMenu("Scene operation")]
+[AddComponentMenu("SceneOperate/Scene Operation")]
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [ExecuteInEditMode]
