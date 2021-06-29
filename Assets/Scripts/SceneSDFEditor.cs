@@ -21,8 +21,8 @@ public class SceneSDFEditor : Editor
             //scenesdf.Init();
         }
         scenesdf.operationType = (BooleanType)EditorGUILayout.EnumPopup("Operation", scenesdf.operationType);
-        scenesdf.operationA = (Transform)EditorGUILayout.ObjectField("OperandA", scenesdf.operationA, typeof(Transform), true);
-        scenesdf.operationB = (Transform)EditorGUILayout.ObjectField("OperandB", scenesdf.operationB, typeof(Transform), true);
+        scenesdf.operationA = (MeshFilter)EditorGUILayout.ObjectField("OperandA", scenesdf.operationA, typeof(MeshFilter), true);
+        scenesdf.operationB = (MeshFilter)EditorGUILayout.ObjectField("OperandB", scenesdf.operationB, typeof(MeshFilter), true);
 
         GUILayout.Space(8.0f);
         scenesdf.McShader = (ComputeShader)EditorGUILayout.ObjectField("McShader", scenesdf.McShader, typeof(ComputeShader), true);

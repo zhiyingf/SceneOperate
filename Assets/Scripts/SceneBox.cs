@@ -13,6 +13,8 @@ public class SceneBox
 
     //sdf局部更新---MC局部更新
     public Vector3 localBoxMin;
+    public Vector3Int testBen;
+    public Vector3Int testEnd;
 
 
     public SceneBox()
@@ -31,28 +33,37 @@ public class SceneBox
         Vector3Int posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         Vector3Int posEnd = sdfObj.Ncells + posBegin;
 
-        SdfAssign(posBegin, posEnd, boxMatrix, sdfObj.Objsdf);
+        //SdfAssign(posBegin, posEnd, boxMatrix, sdfObj.Objsdf);
 
     }
 
-    public void UpdateSDF(Transform objA, ObjSdfTable sdfObjA,Transform objB,ObjSdfTable sdfObjB, BooleanType type,ComputeShader sdfShader)
+    public void UpdateSDF(MeshFilter objA, ObjSdfTable sdfObjA,MeshFilter objB,ObjSdfTable sdfObjB, BooleanType type,ComputeShader sdfShader)
     {
         //加两个物体
         //UpdateSDF(objA, sdfObjA);
 
-        Vector3 pos = objA.position;
-        Vector3 sizeHalf = sdfObjA.Whl / 2.0f;
-        Vector3 objAmin = pos - sizeHalf;
-        Vector3 objAmax = pos + sizeHalf;
+        //Vector3 pos = objA.transform.position;
+        //Vector3 sizeHalf = sdfObjA.Whl / 2.0f;
+        //Vector3 objAmin = pos - sizeHalf;
+        //Vector3 objAmax = pos + sizeHalf;
 
-        pos = objB.position;
-        sizeHalf = sdfObjB.Whl / 2.0f;
-        Vector3 objBmin = pos - sizeHalf;
-        Vector3 objBmax = pos + sizeHalf;
+        //pos = objB.transform.position;
+        //sizeHalf = sdfObjB.Whl / 2.0f;
+        //Vector3 objBmin = pos - sizeHalf;
+        //Vector3 objBmax = pos + sizeHalf;
+
+        Bounds boundsA = objA.GetComponent<Renderer>().bounds;
+        Bounds boundsB = objB.GetComponent<Renderer>().bounds;
+        Vector3 objAmin = boundsA.min;
+        Vector3 objAmax = boundsA.max;
+        Vector3 objBmin = boundsB.min;
+        Vector3 objBmax = boundsB.max;
+        Vector3 pos;
+
 
         //local box min max
         localBoxMin = new Vector3(Mathf.Min(objAmin.x, objBmin.x) - 2 * Constants.Step, Mathf.Min(objAmin.y, objBmin.y) - 2 * Constants.Step, Mathf.Min(objAmin.z, objBmin.z) - 2 * Constants.Step);
-        Vector3 localBoxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x) + 2 * Constants.Step, Mathf.Max(objAmax.y, objBmax.y) + 2 * Constants.Step, Mathf.Max(objAmax.z, objBmax.z) + 2 * Constants.Step);
+        Vector3 localBoxMax = new Vector3(Mathf.Max(objAmax.x, objBmax.x) + 3 * Constants.Step, Mathf.Max(objAmax.y, objBmax.y) + 3 * Constants.Step, Mathf.Max(objAmax.z, objBmax.z) + 3 * Constants.Step);
 
         Vector3 boxSizef = (localBoxMax - localBoxMin) / Constants.Step;
 
@@ -65,9 +76,13 @@ public class SceneBox
         //objA in box begin position
         pos = (objAmin - localBoxMin) / Constants.Step;
         Vector3Int posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
-        Vector3Int posEnd = sdfObjA.Ncells + posBegin;
+        //Vector3Int posEnd = sdfObjA.Ncells + posBegin;
+        pos = (objAmax - objAmin) / Constants.Step;
+        Vector3Int posEnd = new Vector3Int(Mathf.CeilToInt(pos.x), Mathf.CeilToInt(pos.y), Mathf.CeilToInt(pos.z)) + posBegin;
 
-        SdfAssign(posBegin, posEnd, boxMatrix, sdfObjA.Objsdf);
+        testBen = posBegin;
+        testEnd = posEnd;
+        SdfAssign(objA.transform, objAmin, posBegin, posEnd, ref boxMatrix, sdfObjA.Objsdf);
 
 
         //boxB
@@ -77,9 +92,12 @@ public class SceneBox
         //objB in boxB begin position
         pos = (objBmin - localBoxMin) / Constants.Step;
         posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
-        posEnd = sdfObjB.Ncells + posBegin;
+        //posEnd = sdfObjB.Ncells + posBegin;
+        pos = (objBmax - objBmin) / Constants.Step;
+        posEnd = new Vector3Int(Mathf.CeilToInt(pos.x), Mathf.CeilToInt(pos.y), Mathf.CeilToInt(pos.z)) + posBegin;
 
-        SdfAssign(posBegin, posEnd, box, sdfObjB.Objsdf);
+
+        SdfAssign(objB.transform, objBmin, posBegin, posEnd, ref box, sdfObjB.Objsdf);
 
         SdfCompute(type, box);
 
@@ -106,20 +124,28 @@ public class SceneBox
     }
 
 
-    void SdfAssign(Vector3Int posBegin, Vector3Int posEnd, float[,,] boxMatrix ,float[] objsdf)
+    void SdfAssign(in Transform transform,in Vector3 objMin,in Vector3Int posBegin,in Vector3Int posEnd,ref float[,,] boxMatrix ,in float[] objsdf)
     {
-        Vector3Int ixyz = posEnd - posBegin + new Vector3Int(1, 1, 1);
-
+        Vector3Int ixyz = new Vector3Int(51, 51, 51);
+        Bounds bounds = new Bounds(new Vector3(0,0,0),new Vector3(1,1,1));
         for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
         {
             for (int j = posBegin.y, jj = 0; j <= posEnd.y; j++, jj++)
             {
                 for (int k = posBegin.z, kk = 0; k <= posEnd.z; k++, kk++)
                 {
-                    //int idx = ii * ixyz.y * ixyz.z + jj * ixyz.z + kk;
-                    int idx = ii + jj * ixyz.x + kk * ixyz.y * ixyz.x;
+                    Vector3 t = objMin + new Vector3(ii, jj, kk) * Constants.Step;
+                    t = transform.InverseTransformPoint(t);
+
+                    if (bounds.Contains(t))
+                    {
+                        t = (t - bounds.min) / Constants.Step;
+                        Vector3Int ti = new Vector3Int(Mathf.RoundToInt(t.x), Mathf.RoundToInt(t.y), Mathf.RoundToInt(t.z));
+                        int idx = ti.x + ti.y * ixyz.x + ti.z * ixyz.y * ixyz.x;
+                        boxMatrix[i, j, k] = objsdf[idx];
+                    }
                     
-                    boxMatrix[i, j, k] = objsdf[idx];
+                    
                 }
             }
         }
