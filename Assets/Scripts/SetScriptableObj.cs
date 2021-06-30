@@ -33,6 +33,7 @@ public class SetScriptableObj : MonoBehaviour
             Texture3D texture = new Texture3D(maxGridSideLength, maxGridSideLength, maxGridSideLength, TextureFormat.RFloat, false);
             texture.filterMode = FilterMode.Bilinear;
             texture.SetPixelData(sdf, 0);
+            //texture.Apply();//??
             string texName = "Assets/source/Texture3D/" + assetName + ".asset";
             AssetDatabase.CreateAsset(texture, texName);
 

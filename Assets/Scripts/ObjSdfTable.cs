@@ -7,7 +7,7 @@ public class ObjSdfTable
     public Vector3 Whl;
     public Vector3Int Ncells;
     public float[] Objsdf;
-    public Vector3[] NormalSDF;
+    //public Vector3[] NormalSDF;
 
 
     //General SDF for preloaded objects
