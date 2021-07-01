@@ -13,8 +13,8 @@ using UnityEngine;
 public class SceneSDF : MonoBehaviour
 {
     public SceneBox SB;
-    ObjSdfTable objsdfA;
-    ObjSdfTable objsdfB;
+    //ObjSdfTable objsdfA;
+    //ObjSdfTable objsdfB;
 
     public MeshFilter operationA;
     public MeshFilter operationB;
@@ -54,7 +54,7 @@ public class SceneSDF : MonoBehaviour
     }
 
     //use ref/out
-    public void ObjAssign(in MeshFilter operation,ref string name, ref ObjSdfTable objsdf, ref Vector3 position, ref Quaternion rotation, ref Vector3 scale)
+    public void ObjAssign(in MeshFilter operation,ref string name, ref Vector3 position, ref Quaternion rotation, ref Vector3 scale)
     {
         name = operation.name;
 
@@ -63,10 +63,10 @@ public class SceneSDF : MonoBehaviour
         ///max<0.5----0.5----size:1.0 (max<0.5 则 0.0 < size < 1.0)
         ///max>0.5----1.0----size:2.0 (max>0.5 则 1.0 < size < 2.0)
         ///
-        Vector3 size = operation.GetComponent<Renderer>().bounds.size;
-        objsdf = new ObjSdfTable(new Vector3(Mathf.Ceil(size.x), Mathf.Ceil(size.y), Mathf.Ceil(size.z)));
-        print("Bounds" + " name" + new Vector3(Mathf.Ceil(size.x), Mathf.Ceil(size.y), Mathf.Ceil(size.z)));
-        ReadSDF(operation.name, objsdf.Objsdf);
+        //Vector3 size = operation.GetComponent<Renderer>().bounds.size;
+        //objsdf = new ObjSdfTable(new Vector3(Mathf.Ceil(size.x), Mathf.Ceil(size.y), Mathf.Ceil(size.z)));
+        //print("Bounds" + " name" + new Vector3(Mathf.Ceil(size.x), Mathf.Ceil(size.y), Mathf.Ceil(size.z)));
+        //ReadSDF(operation.name, objsdf.Objsdf);
 
         position = operation.transform.position;
         rotation = operation.transform.rotation;
@@ -85,11 +85,11 @@ public class SceneSDF : MonoBehaviour
         SB = new SceneBox();
         if (operationA != null)
         {
-            ObjAssign(operationA, ref nameA, ref objsdfA, ref positionA, ref rotationA, ref scaleA);
+            ObjAssign(operationA, ref nameA, ref positionA, ref rotationA, ref scaleA);
         }
         if (operationB != null)
         {
-            ObjAssign(operationB, ref nameB, ref objsdfB, ref positionB, ref rotationB, ref scaleB);
+            ObjAssign(operationB, ref nameB, ref positionB, ref rotationB, ref scaleB);
         }
     }
 
@@ -107,11 +107,11 @@ public class SceneSDF : MonoBehaviour
                 living = false;//必不可少 把锁打开
                 if (nameA != operationA.name)
                 {
-                    ObjAssign(operationA, ref nameA, ref objsdfA, ref positionA, ref rotationA, ref scaleA);
+                    ObjAssign(operationA, ref nameA, ref positionA, ref rotationA, ref scaleA);
                 }
                 if (nameB != operationB.name)
                 {
-                    ObjAssign(operationB, ref nameB, ref objsdfB, ref positionB, ref rotationB, ref scaleB);
+                    ObjAssign(operationB, ref nameB, ref positionB, ref rotationB, ref scaleB);
                 }
             }
 
@@ -185,7 +185,16 @@ public class SceneSDF : MonoBehaviour
         //SB.UpdateSDF(operationA, objsdfA);
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
-        SB.UpdateSDF(operationA, objsdfA, operationB, objsdfB, operationType, SdfShader);
+        ManagerScriptableObject attachScr = operationA.GetComponent<AttachScriptable>().Scriptable;
+        Texture3D texture3DA = attachScr.SDFTexture;
+        Bounds boundsA = attachScr.Bounds;
+        Vector3Int npointA = attachScr.Size;
+        var objsdfA = texture3DA.GetPixelData<float>(0);
+        print(objsdfA.Length);
+
+
+
+        SB.UpdateSDF(operationA, operationB, operationType, SdfShader);
 
         ///
         //Vector3Int Npoint = SB.ncells + Vector3Int.one;

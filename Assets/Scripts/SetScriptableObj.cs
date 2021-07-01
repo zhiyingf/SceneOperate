@@ -13,7 +13,7 @@ public class SetScriptableObj : MonoBehaviour
     // Start is called before the first frame update
     void SetTexture()
     {
-        String path = @"E:\Users\zhiyi\StudyUnity\Assets\SDF";
+        String path = @"E:\Users\zhiyi\SceneOperate\Assets\SDF";
         //第二种方法
         DirectoryInfo folder = new DirectoryInfo(path);
 
@@ -22,7 +22,7 @@ public class SetScriptableObj : MonoBehaviour
         {
             i++;
             string sdfName = file.Name;
-            const int maxGridSideLength = 50;
+            const int maxGridSideLength = 51;
             Vector3Int ncell = new Vector3Int(maxGridSideLength, maxGridSideLength, maxGridSideLength);
             float[] sdf = new float[(ncell.x + 1) * (ncell.x + 1) * (ncell.x + 1)];
             ReadSDF(sdfName, sdf);

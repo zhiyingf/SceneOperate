@@ -38,7 +38,7 @@ public class SceneBox
 
     //}
 
-    public void UpdateSDF(MeshFilter objA, ObjSdfTable sdfObjA,MeshFilter objB,ObjSdfTable sdfObjB, BooleanType type,ComputeShader sdfShader)
+    public void UpdateSDF(MeshFilter objA, MeshFilter objB,BooleanType type,ComputeShader sdfShader)
     {
         Bounds boundsA = objA.GetComponent<Renderer>().bounds;
         Bounds boundsB = objB.GetComponent<Renderer>().bounds;
@@ -63,7 +63,7 @@ public class SceneBox
 
         //way1
         /////////////////
-        SdfCompute(type, objA.transform, objB.transform, localBoxMin, ncells, sdfObjA.Objsdf, sdfObjB.Objsdf);
+        SdfCompute(type, objA.transform, objB.transform, localBoxMin, ncells);
 
 
         //wey3
@@ -141,14 +141,15 @@ public class SceneBox
     }
 
 
-    void SdfAssign(in Transform transform,in Vector3 objMin,in Vector3Int posBegin,in Vector3Int posEnd,ref float[,,] boxMatrix ,in float[] objsdf)
+    void SdfAssign(in Transform transform,in Vector3 objMin,in Vector3Int posBegin,in Vector3Int posEnd,ref float[,,] boxMatrix)
     {
         ManagerScriptableObject attachScr = transform.GetComponent<AttachScriptable>().Scriptable;
         Texture3D texture3D = attachScr.SDFTexture;
         Bounds bounds = attachScr.Bounds;
+        var objsdf = texture3D.GetPixelData<float>(0);
+        Vector3Int npoint = attachScr.Size;
+        int xyz = npoint.x * npoint.y * npoint.z;
 
-        Vector3Int ixyz = new Vector3Int(51, 51, 51);
-        int xyz = 51 * 51 * 51;
         //Bounds bounds = new Bounds(new Vector3(0,0,0),new Vector3(1,1,1));
         for (int i = posBegin.x, ii = 0; i <= posEnd.x; i++, ii++)
         {
@@ -173,17 +174,17 @@ public class SceneBox
                         Vector3Int tInt = new Vector3Int(Mathf.FloorToInt(t.x), Mathf.FloorToInt(t.y), Mathf.FloorToInt(t.z));
                         Vector3 tDecimal = t - tInt;
 
-                        int idx = tInt.x + tInt.y * ixyz.x + tInt.z * ixyz.y * ixyz.x;
+                        int idx = tInt.x + tInt.y * npoint.x + tInt.z * npoint.y * npoint.x;
 
-                        if ((idx + 1 + ixyz.x + ixyz.y * ixyz.x)>xyz)
+                        if ((idx + 1 + npoint.x + npoint.y * npoint.x)>xyz)
                         {//正确运行的前提可能是限定模型的包围盒要比紧凑的包围盒大一些，三线性插值才不会出错，否则得加这个判断
                             boxMatrix[i, j, k] = objsdf[idx];
                         }
                         else
                         {
-                            Vector4 U = new Vector4(objsdf[idx], objsdf[idx + 1], objsdf[idx + ixyz.x], objsdf[idx + ixyz.x + 1]);
-                            idx += ixyz.y * ixyz.x;
-                            Vector4 V = new Vector4(objsdf[idx], objsdf[idx + 1], objsdf[idx + ixyz.x], objsdf[idx + ixyz.x + 1]);
+                            Vector4 U = new Vector4(objsdf[idx], objsdf[idx + 1], objsdf[idx + npoint.x], objsdf[idx + npoint.x + 1]);
+                            idx += npoint.y * npoint.x;
+                            Vector4 V = new Vector4(objsdf[idx], objsdf[idx + 1], objsdf[idx + npoint.x], objsdf[idx + npoint.x + 1]);
 
                             Vector2 u = new Vector2(Mathf.Lerp(U.x, U.y, tDecimal.x), Mathf.Lerp(U.z, U.w, tDecimal.x));
                             float f1 = Mathf.Lerp(u.x, u.y, tDecimal.y);
@@ -246,18 +247,22 @@ public class SceneBox
 
     //way2
     //直接做交并补运算，只需要一张SDF表
-    void SdfCompute(BooleanType type, in Transform transformA, in Transform transformB, in Vector3 objMin, in Vector3Int ncell, in float[] objsdfA, in float[] objsdfB)
-    {
+    void SdfCompute(BooleanType type, in Transform transformA, in Transform transformB, in Vector3 objMin, in Vector3Int ncell)
+    {//, in float[] objsdfA, in float[] objsdfB
         ManagerScriptableObject attachScr = transformA.GetComponent<AttachScriptable>().Scriptable;
         Texture3D texture3DA = attachScr.SDFTexture;
         Bounds boundsA = attachScr.Bounds;
+        Vector3Int npointA = attachScr.Size;
+        var objsdfA = texture3DA.GetPixelData<float>(0);
+        
 
         attachScr = transformB.GetComponent<AttachScriptable>().Scriptable;
         Texture3D texture3DB = attachScr.SDFTexture;
         Bounds boundsB = attachScr.Bounds;
+        Vector3Int npointB = attachScr.Size;
+        var objsdfB = texture3DB.GetPixelData<float>(0);
 
-        Vector3Int ixyz = new Vector3Int(51, 51, 51);
-        int xyz = 51 * 51 * 51;
+        int xyz = npointA.x * npointA.y * npointA.z;
 
         for (int i = 0; i <= ncell.x; i++)
         {
@@ -278,17 +283,17 @@ public class SceneBox
                             Vector3Int tInt = new Vector3Int(Mathf.FloorToInt(tStep.x), Mathf.FloorToInt(tStep.y), Mathf.FloorToInt(tStep.z));
                             Vector3 tDecimal = tStep - tInt;
 
-                            int idx = tInt.x + tInt.y * ixyz.x + tInt.z * ixyz.y * ixyz.x;
-                            if ((idx + 1 + ixyz.x + ixyz.y * ixyz.x) > xyz)
+                            int idx = tInt.x + tInt.y * npointA.x + tInt.z * npointA.y * npointA.x;
+                            if ((idx + 1 + npointA.x + npointA.y * npointA.x) > xyz)
                             {
                                 tempA = objsdfA[idx];
                             }
                             else
                             {
-                                Vector4 U = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + ixyz.x], objsdfA[idx + ixyz.x + 1]);
+                                Vector4 U = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + npointA.x], objsdfA[idx + npointA.x + 1]);
 
-                                idx += ixyz.y * ixyz.x;
-                                Vector4 V = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + ixyz.x], objsdfA[idx + ixyz.x + 1]);
+                                idx += npointA.y * npointA.x;
+                                Vector4 V = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + npointA.x], objsdfA[idx + npointA.x + 1]);
 
                                 Vector2 u = new Vector2(Mathf.Lerp(U.x, U.y, tDecimal.x), Mathf.Lerp(U.z, U.w, tDecimal.x));
                                 float f1 = Mathf.Lerp(u.x, u.y, tDecimal.y);
@@ -308,17 +313,17 @@ public class SceneBox
                             Vector3Int tInt = new Vector3Int(Mathf.FloorToInt(tStep.x), Mathf.FloorToInt(tStep.y), Mathf.FloorToInt(tStep.z));
                             Vector3 tDecimal = tStep - tInt;
 
-                            int idx = tInt.x + tInt.y * ixyz.x + tInt.z * ixyz.y * ixyz.x;
-                            if ((idx + 1 + ixyz.x + ixyz.y * ixyz.z) > idx)
+                            int idx = tInt.x + tInt.y * npointB.x + tInt.z * npointB.y * npointB.x;
+                            if ((idx + 1 + npointB.x + npointB.y * npointB.z) > idx)
                             {
                                 tempB = objsdfB[idx];
                             }
                             else
                             {
-                                Vector4 U = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + ixyz.x], objsdfB[idx + ixyz.x + 1]);
+                                Vector4 U = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + npointB.x], objsdfB[idx + npointB.x + 1]);
 
-                                idx += ixyz.y * ixyz.x;
-                                Vector4 V = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + ixyz.x], objsdfB[idx + ixyz.x + 1]);
+                                idx += npointB.y * npointB.x;
+                                Vector4 V = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + npointB.x], objsdfB[idx + npointB.x + 1]);
 
                                 Vector2 u = new Vector2(Mathf.Lerp(U.x, U.y, tDecimal.x), Mathf.Lerp(U.z, U.w, tDecimal.x));
                                 float f1 = Mathf.Lerp(u.x, u.y, tDecimal.y);
