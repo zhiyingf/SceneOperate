@@ -26,18 +26,6 @@ public class SceneBox
         sceneBox = new Bounds(center, size);
     }
 
-
-    //public void UpdateSDF(Transform obj, ObjSdfTable sdfObj)
-    //{//加第一个物体 只有平移
-    //    Vector3 sizeHalf = sdfObj.Whl / 2.0f;
-    //    Vector3 pos = (obj.position - sizeHalf - sceneBox.min) / Constants.Step;
-    //    Vector3Int posBegin = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
-    //    Vector3Int posEnd = sdfObj.Ncells + posBegin;
-
-    //    //SdfAssign(posBegin, posEnd, boxMatrix, sdfObj.Objsdf);
-
-    //}
-
     public void UpdateSDF(MeshFilter objA, MeshFilter objB,BooleanType type,ComputeShader sdfShader)
     {
         Bounds boundsA = objA.GetComponent<Renderer>().bounds;
@@ -63,7 +51,12 @@ public class SceneBox
 
         //way1
         /////////////////
-        SdfCompute(type, objA.transform, objB.transform, localBoxMin, ncells);
+        //SdfCompute(type, objA.transform, objB.transform, localBoxMin, ncells);
+
+        /////use computeshader
+        ///
+        UseTexShader texShader = new UseTexShader(objA.transform, objB.transform, ncells, localBoxMin);
+        texShader.ComputeSDF(sdfShader, type, ref boxMatrix);
 
 
         //wey3
@@ -262,7 +255,11 @@ public class SceneBox
         Vector3Int npointB = attachScr.Size;
         var objsdfB = texture3DB.GetPixelData<float>(0);
 
-        int xyz = npointA.x * npointA.y * npointA.z;
+        int xyzA = npointA.x * npointA.y * npointA.z;
+        int xyzB = npointB.x * npointB.y * npointB.z;
+
+        Matrix4x4 matrixA = transformA.worldToLocalMatrix;
+        Matrix4x4 matrixB = transformB.worldToLocalMatrix;
 
         for (int i = 0; i <= ncell.x; i++)
         {
@@ -272,8 +269,14 @@ public class SceneBox
                 {
                     Vector3 t0 = objMin + new Vector3(i, j, k) * Constants.Step;
 
-                    Vector3 tA = transformA.InverseTransformPoint(t0);
-                    Vector3 tB = transformB.InverseTransformPoint(t0);
+                    //Vector3 tA = transformA.InverseTransformPoint(t0);
+                    //Vector3 tB = transformB.InverseTransformPoint(t0);
+
+                    Vector4 t04 = new Vector4(t0.x, t0.y, t0.z, 1);
+                    Vector4 tA4 = matrixA * t04;
+                    Vector4 tB4 = matrixB * t04;
+                    Vector3 tA = new Vector3(tA4.x, tA4.y, tA4.z);
+                    Vector3 tB = new Vector3(tB4.x, tB4.y, tB4.z);
 
                     float tempA = float.MaxValue;
                     {
@@ -284,7 +287,7 @@ public class SceneBox
                             Vector3 tDecimal = tStep - tInt;
 
                             int idx = tInt.x + tInt.y * npointA.x + tInt.z * npointA.y * npointA.x;
-                            if ((idx + 1 + npointA.x + npointA.y * npointA.x) > xyz)
+                            if ((idx + 1 + npointA.x + npointA.y * npointA.x) > xyzA)
                             {
                                 tempA = objsdfA[idx];
                             }
@@ -314,7 +317,7 @@ public class SceneBox
                             Vector3 tDecimal = tStep - tInt;
 
                             int idx = tInt.x + tInt.y * npointB.x + tInt.z * npointB.y * npointB.x;
-                            if ((idx + 1 + npointB.x + npointB.y * npointB.z) > idx)
+                            if ((idx + 1 + npointB.x + npointB.y * npointB.z) > xyzB)
                             {
                                 tempB = objsdfB[idx];
                             }
@@ -337,13 +340,13 @@ public class SceneBox
 
                     switch (type)
                     {
-                        case BooleanType.Intersection:
+                        case BooleanType.Intersection://1
                             boxMatrix[i, j, k] = Mathf.Max(tempA, tempB);
                             break;
-                        case BooleanType.Subtract:
+                        case BooleanType.Subtract://2
                             boxMatrix[i, j, k] = Mathf.Max(tempA, -tempB);
                             break;
-                        case BooleanType.Union:
+                        case BooleanType.Union://0
                             boxMatrix[i, j, k] = Mathf.Min(tempA, tempB);
                             break;
                     }
@@ -375,13 +378,15 @@ public class SceneBox
         ManagerScriptableObject attachScr = transformA.GetComponent<AttachScriptable>().Scriptable;
         Texture3D texture3DA = attachScr.SDFTexture;
         Bounds boundsA = attachScr.Bounds;
+        Vector3Int npointA = attachScr.Size;
 
         attachScr = transformB.GetComponent<AttachScriptable>().Scriptable;
         Texture3D texture3DB = attachScr.SDFTexture;
         Bounds boundsB = attachScr.Bounds;
+        Vector3Int npointB = attachScr.Size;
 
-        Vector3Int ixyz = new Vector3Int(51, 51, 51);
-        int xyz = 51 * 51 * 51;
+        int xyzA = npointA.x * npointA.y * npointA.z;
+        int xyzB = npointB.x * npointB.y * npointB.z;
 
         for (int i = 0; i <= ncell.x; i++)
         {
@@ -402,16 +407,16 @@ public class SceneBox
                             Vector3Int tInt = new Vector3Int(Mathf.FloorToInt(tStep.x), Mathf.FloorToInt(tStep.y), Mathf.FloorToInt(tStep.z));
                             Vector3 tDecimal = tStep - tInt;
 
-                            int idx = tInt.x + tInt.y * ixyz.x + tInt.z * ixyz.y * ixyz.x;
-                            if ((idx + 1 + ixyz.x + ixyz.y * ixyz.x) > xyz)
+                            int idx = tInt.x + tInt.y * npointA.x + tInt.z * npointA.y * npointA.x;
+                            if ((idx + 1 + npointA.x + npointA.y * npointA.x) > xyzA)
                             {
                                 tempA = objsdfA[idx];
                             }
                             else
                             {
-                                Vector4 U = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + ixyz.x], objsdfA[idx + ixyz.x + 1]);
-                                idx += ixyz.y * ixyz.x;
-                                Vector4 V = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + ixyz.x], objsdfA[idx + ixyz.x + 1]);
+                                Vector4 U = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + npointA.x], objsdfA[idx + npointA.x + 1]);
+                                idx += npointA.y * npointA.x;
+                                Vector4 V = new Vector4(objsdfA[idx], objsdfA[idx + 1], objsdfA[idx + npointA.x], objsdfA[idx + npointA.x + 1]);
 
                                 Vector2 u = new Vector2(Mathf.Lerp(U.x, U.y, tDecimal.x), Mathf.Lerp(U.z, U.w, tDecimal.x));
                                 float f1 = Mathf.Lerp(u.x, u.y, tDecimal.y);
@@ -431,16 +436,16 @@ public class SceneBox
                             Vector3Int tInt = new Vector3Int(Mathf.FloorToInt(tStep.x), Mathf.FloorToInt(tStep.y), Mathf.FloorToInt(tStep.z));
                             Vector3 tDecimal = tStep - tInt;
 
-                            int idx = tInt.x + tInt.y * ixyz.x + tInt.z * ixyz.y * ixyz.x;
-                            if ((idx + 1 + ixyz.x + ixyz.y * ixyz.x) > xyz)
+                            int idx = tInt.x + tInt.y * npointB.x + tInt.z * npointB.y * npointB.x;
+                            if ((idx + 1 + npointB.x + npointB.y * npointB.z) > xyzB)
                             {
                                 tempB = objsdfB[idx];
                             }
                             else
                             {///trilinear inter
-                                Vector4 U = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + ixyz.x], objsdfB[idx + ixyz.x + 1]);
-                                idx += ixyz.y * ixyz.x;
-                                Vector4 V = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + ixyz.x], objsdfB[idx + ixyz.x + 1]);
+                                Vector4 U = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + npointB.x], objsdfB[idx + npointB.x + 1]);
+                                idx += npointB.y * npointB.x;
+                                Vector4 V = new Vector4(objsdfB[idx], objsdfB[idx + 1], objsdfB[idx + npointB.x], objsdfB[idx + npointB.x + 1]);
 
                                 Vector2 u = new Vector2(Mathf.Lerp(U.x, U.y, tDecimal.x), Mathf.Lerp(U.z, U.w, tDecimal.x));
                                 float f1 = Mathf.Lerp(u.x, u.y, tDecimal.y);

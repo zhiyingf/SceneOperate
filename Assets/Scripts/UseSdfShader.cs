@@ -17,8 +17,6 @@ public class UseSdfShader
         Npoint = ncell + Vector3Int.one;
         SdfShader = sdfShader;
         InitBuffers(sdfa, sdfb);
-        
-
     }
 
     public void ComputeSDF(float[,,] sdfa, BooleanType type)

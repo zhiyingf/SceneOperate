@@ -185,12 +185,12 @@ public class SceneSDF : MonoBehaviour
         //SB.UpdateSDF(operationA, objsdfA);
         //NumToString(objsdf.Objsdf, "objsdf.txt");
 
-        ManagerScriptableObject attachScr = operationA.GetComponent<AttachScriptable>().Scriptable;
-        Texture3D texture3DA = attachScr.SDFTexture;
-        Bounds boundsA = attachScr.Bounds;
-        Vector3Int npointA = attachScr.Size;
-        var objsdfA = texture3DA.GetPixelData<float>(0);
-        print(objsdfA.Length);
+        //ManagerScriptableObject attachScr = operationA.GetComponent<AttachScriptable>().Scriptable;
+        //Texture3D texture3DA = attachScr.SDFTexture;
+        //Bounds boundsA = attachScr.Bounds;
+        //Vector3Int npointA = attachScr.Size;
+        //var objsdfA = texture3DA.GetPixelData<float>(0);
+        //print(objsdfA.Length);
 
 
 
@@ -237,19 +237,20 @@ public class SceneSDF : MonoBehaviour
 
         //print(NumToString(SB.boxMatrix));
         //NumToString(SB.boxMatrix, "boxMatrix.txt");
+        print("operationType "+(int)operationType);
     }
 
     //把每一个数取出来转化为字符串
-    public void NumToString(float[,,] list, string fileName)
+    public static void NumToString(float[,,] list, string fileName)
     {
         string str = "";
         //foreach (float n in list)
         //    str += n.ToString() + " ";
-        for(int i = 0; i <= 10; i++)
+        for(int i = 0; i <= 30; i++)
         {
-            for(int j = 0;j <= 10; j++)
+            for(int j = 0;j <= 30; j++)
             {
-                for(int k = 0;k <= 10; k++)
+                for(int k = 0;k <= 30; k++)
                 {
                     str += list[i,j,k].ToString() + " ";
                 }
@@ -262,7 +263,6 @@ public class SceneSDF : MonoBehaviour
         sw.WriteLine(str);
         sw.Close();
         sw.Dispose();
-
         //return str;
     }
 
