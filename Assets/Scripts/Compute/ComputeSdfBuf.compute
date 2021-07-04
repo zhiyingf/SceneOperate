@@ -1,0 +1,119 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+static const int numThreads = 8;
+int3 numPointsXyzAxis;//
+
+RWStructuredBuffer<float> sdfA;//
+RWStructuredBuffer<float> sdfB;//
+RWStructuredBuffer<float> sdfRes;
+
+float4x4 transMatrixA;//
+float4x4 transMatrixB;//
+
+float3 boundsMinA;//
+float3 boundsMaxA;//
+float3 boundsMinB;//
+float3 boundsMaxB;//
+
+int4 SizeA;//
+int4 SizeB;//
+
+float3 localBoxMin;//
+
+float step;//
+int type;//
+float MaxValue;//
+
+
+
+
+int indexFromCoord(uint3 idx) {
+    return idx.z * numPointsXyzAxis.y * numPointsXyzAxis.x + idx.y * numPointsXyzAxis.x + idx.x;
+}
+
+bool contains(float3 p, float3 boundsMin, float3 boundsMax) {
+    if (p.x >= boundsMin.x && p.y >= boundsMin.y && p.z >= boundsMin.z && p.x <= boundsMax.x && p.y <= boundsMax.y && p.z <= boundsMax.z) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+[numthreads(numThreads, numThreads, numThreads)]
+void CSMain(int3 id : SV_DispatchThreadID)
+{
+    if (id.x >= numPointsXyzAxis.x || id.y >= numPointsXyzAxis.y || id.z >= numPointsXyzAxis.z) {
+        return;
+    }
+    float3 t0 = localBoxMin + id * step;
+    float3 tA = mul(transMatrixA, float4(t0.xyz, 1.0f)).xyz;
+    float3 tB = mul(transMatrixB, float4(t0.xyz, 1.0f)).xyz;
+
+    float tempA = MaxValue;
+    {
+        if (contains(tA, boundsMinA, boundsMaxA)) {
+            float3 tStep = (tA - boundsMinA) / step;
+            int3 tInt = floor(tStep);
+            float3 tDecimal = tStep - tInt;
+
+            int idx = tInt.x + tInt.y * SizeA.x + tInt.z * SizeA.y * SizeA.x;
+            if ((idx + 1 + SizeA.x + SizeA.y * SizeA.x) > SizeA.w) {
+                tempA = sdfA[idx];
+            }
+            else {
+                float4 U = float4(sdfA[idx], sdfA[idx + 1], sdfA[idx + SizeA.x], sdfA[idx + SizeA.x + 1]);
+
+                idx += SizeA.y * SizeA.x;
+                float4 V = float4(sdfA[idx], sdfA[idx + 1], sdfA[idx + SizeA.x], sdfA[idx + SizeA.x + 1]);
+
+                float2 u = float2(lerp(U.x, U.y, tDecimal.x), lerp(U.z, U.w, tDecimal.x));
+                float f1 = lerp(u.x, u.y, tDecimal.y);
+                float2 v = float2(lerp(V.x, V.y, tDecimal.x), lerp(V.z, V.w, tDecimal.x));
+                float f2 = lerp(v.x, v.y, tDecimal.y);
+
+                tempA = lerp(f1, f2, tDecimal.z);
+            }
+        }
+    }
+
+    float tempB = MaxValue;
+    {
+        if (contains(tB, boundsMinB, boundsMaxB)) {
+            float3 tStep = (tB - boundsMinB) / step;
+            int3 tInt = floor(tStep);
+            float3 tDecimal = tStep - tInt;
+
+            int idx = tInt.x + tInt.y * SizeB.x + tInt.z * SizeB.y * SizeB.x;
+            if ((idx + 1 + SizeB.x + SizeB.y * SizeB.x) > SizeB.w) {
+                tempB = sdfB[idx];
+            }
+            else {
+                float4 U = float4(sdfB[idx], sdfB[idx + 1], sdfB[idx + SizeB.x], sdfB[idx + SizeB.x + 1]);
+
+                idx += SizeB.y * SizeB.x;
+                float4 V = float4(sdfB[idx], sdfB[idx + 1], sdfB[idx + SizeB.x], sdfB[idx + SizeB.x + 1]);
+
+                float2 u = float2(lerp(U.x, U.y, tDecimal.x), lerp(U.z, U.w, tDecimal.x));
+                float f1 = lerp(u.x, u.y, tDecimal.y);
+                float2 v = float2(lerp(V.x, V.y, tDecimal.x), lerp(V.z, V.w, tDecimal.x));
+                float f2 = lerp(v.x, v.y, tDecimal.y);
+
+                tempB = lerp(f1, f2, tDecimal.z);
+            }
+        }
+    }
+
+    switch (type) {
+    case 0:
+        sdfRes[indexFromCoord(id)] = min(tempA, tempB);
+        break;
+    case 1:
+        sdfRes[indexFromCoord(id)] = max(tempA, tempB);
+        break;
+    case 2:
+        sdfRes[indexFromCoord(id)] = max(tempA, -tempB);
+        break;
+    }
+}

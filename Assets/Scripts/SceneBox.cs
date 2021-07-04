@@ -55,7 +55,7 @@ public class SceneBox
 
         /////use computeshader
         ///
-        UseTexShader texShader = new UseTexShader(objA.transform, objB.transform, ncells, localBoxMin);
+        UseSdfTexShader texShader = new UseSdfTexShader(objA.transform, objB.transform, ncells, localBoxMin);
         texShader.ComputeSDF(sdfShader, type, ref boxMatrix);
 
 
@@ -317,7 +317,7 @@ public class SceneBox
                             Vector3 tDecimal = tStep - tInt;
 
                             int idx = tInt.x + tInt.y * npointB.x + tInt.z * npointB.y * npointB.x;
-                            if ((idx + 1 + npointB.x + npointB.y * npointB.z) > xyzB)
+                            if ((idx + 1 + npointB.x + npointB.y * npointB.x) > xyzB)
                             {
                                 tempB = objsdfB[idx];
                             }

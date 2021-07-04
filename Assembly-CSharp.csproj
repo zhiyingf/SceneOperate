@@ -66,7 +66,7 @@
     <Compile Include="Assets\Scripts\ManagerScriptableObject.cs" />
     <Compile Include="Assets\Scripts\BooleanType.cs" />
     <Compile Include="Assets\Scripts\UseMc.cs" />
-    <Compile Include="Assets\Scripts\UseTexShader.cs" />
+    <Compile Include="Assets\Scripts\UseSdfTexShader.cs" />
     <Compile Include="Assets\Scripts\SaveMesh\ExportMesh.cs" />
     <Compile Include="Assets\Scripts\SaveMesh\EditorUtil.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\IMarching.cs" />
@@ -76,6 +76,7 @@
     <Compile Include="Assets\Scripts\AttachScriptable.cs" />
     <Compile Include="Assets\Scripts\SceneSDF.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\MarchingCubes.cs" />
+    <Compile Include="Assets\Scripts\UseSdfBufShader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\SDF\0092-50.txt" />
@@ -98,12 +99,12 @@
     <None Include="Assets\SDF\4_3_4-50.txt" />
     <None Include="Assets\SDF\0-50.txt" />
     <None Include="Assets\SDF\26_1-50.txt" />
-    <None Include="Assets\Scripts\Compute\textest1.compute" />
+    <None Include="Assets\Scripts\Compute\ComputeSdfBuf.compute" />
     <None Include="Assets\SDF\0094-50.txt" />
     <None Include="Assets\SDF\4_2-50.txt" />
     <None Include="Assets\SDF\0099-50.txt" />
     <None Include="Assets\SDF\84_3-50.txt" />
-    <None Include="Assets\Scripts\Compute\ComputeTexSdf.compute" />
+    <None Include="Assets\Scripts\Compute\ComputeSdfTex.compute" />
     <None Include="Assets\SDF\0_3-50.txt" />
     <None Include="Assets\SDF\testTexture\26p03-50.txt" />
     <None Include="Assets\Material\DiffuseVertexLevel.shader" />
