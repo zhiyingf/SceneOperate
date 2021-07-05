@@ -49,7 +49,7 @@ public class SceneBox
         //boxA
         boxMatrix = new float[ncells.x + 1, ncells.y + 1, ncells.z + 1];
 
-        //way1
+        //way2
         /////////////////
         //SdfCompute(type, objA.transform, objB.transform, localBoxMin, ncells);
 
@@ -57,6 +57,9 @@ public class SceneBox
         ///
         UseSdfTexShader texShader = new UseSdfTexShader(objA.transform, objB.transform, ncells, localBoxMin);
         texShader.ComputeSDF(sdfShader, type, ref boxMatrix);
+
+        //UseSdfBufShader bufShader = new UseSdfBufShader(objA.transform, objB.transform, ncells, localBoxMin);
+        //bufShader.ComputeSDF(sdfShader, type, ref boxMatrix);
 
 
         //wey3

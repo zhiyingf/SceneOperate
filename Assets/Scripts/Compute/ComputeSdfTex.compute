@@ -24,8 +24,11 @@ float4x4 transMatrixB;//
 
 float3 boundsMinA;//
 float3 boundsMaxA;//
+float3 boundsSizeA;
+
 float3 boundsMinB;//
 float3 boundsMaxB;//
+float3 boundsSizeB;
 
 int4 SizeA;//
 int4 SizeB;//
@@ -85,7 +88,8 @@ void CSMain (int3 id : SV_DispatchThreadID)
 
 
             ///////////
-            float3 tStep = (tA - boundsMinA) / (boundsMaxA - boundsMinA);
+            //float3 tStep = (tA - boundsMinA) / (boundsMaxA - boundsMinA);
+            float3 tStep = (tA - boundsMinA) / boundsSizeA;
             tempA = sdfA.SampleLevel(samplersdfA, tStep, 0);
             //tempA = sdfA.Sample(samplersdfA, tStep);
         }
@@ -112,7 +116,7 @@ void CSMain (int3 id : SV_DispatchThreadID)
                 tempB = lerp(f1, f2, tDecimal.z);
             }*/
 
-            float3 tStep = (tB - boundsMinB) / (boundsMaxB - boundsMinB);
+            float3 tStep = (tB - boundsMinB) / boundsSizeB;
             tempB = sdfB.SampleLevel(samplersdfB, tStep, 0);
         }
     }

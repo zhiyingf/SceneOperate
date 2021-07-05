@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 
 //main scene
@@ -237,7 +236,7 @@ public class SceneSDF : MonoBehaviour
 
         //print(NumToString(SB.boxMatrix));
         //NumToString(SB.boxMatrix, "boxMatrix.txt");
-        print("operationType "+(int)operationType);
+        //print("operationType "+(int)operationType);
     }
 
     //把每一个数取出来转化为字符串

@@ -19,8 +19,11 @@ public class UseSdfTexShader
 
     Vector3 boundsMinA;
     Vector3 boundsMaxA;
+    Vector3 boundsSizeA;
+
     Vector3 boundsMinB;
     Vector3 boundsMaxB;
+    Vector3 boundsSizeB;
 
     Vector3Int sizeA;
     Vector3Int sizeB;
@@ -39,6 +42,7 @@ public class UseSdfTexShader
         Bounds boundsA = attachScr.Bounds;
         boundsMinA = boundsA.min;
         boundsMaxA = boundsA.max;
+        boundsSizeA = boundsA.size;
         transMatrixA = transformA.worldToLocalMatrix;
 
 
@@ -50,6 +54,7 @@ public class UseSdfTexShader
         Bounds boundsB = attachScr.Bounds;
         boundsMinB = boundsB.min;
         boundsMaxB = boundsB.max;
+        boundsSizeB = boundsB.size;
         transMatrixB = transformB.worldToLocalMatrix;
 
         localBoxMin = localBoxMins;
@@ -90,10 +95,15 @@ public class UseSdfTexShader
         SdfShader.SetFloats("boundsMinA", BoundsMinA);
         float[] BoundsMaxA = { boundsMaxA.x, boundsMaxA.y, boundsMaxA.z };
         SdfShader.SetFloats("boundsMaxA", BoundsMaxA);
+        float[] BoundsSizeA = { boundsSizeA.x, boundsSizeA.y, boundsSizeA.z };
+        SdfShader.SetFloats("boundsSizeA", BoundsSizeA);
+
         float[] BoundsMinB = { boundsMinB.x, boundsMinB.y, boundsMinB.z };
         SdfShader.SetFloats("boundsMinB", BoundsMinB);
         float[] BoundsMaxB = { boundsMaxB.x, boundsMaxB.y, boundsMaxB.z };
         SdfShader.SetFloats("boundsMaxB", BoundsMaxB);
+        float[] BoundsSizeB = { boundsSizeB.x, boundsSizeB.y, boundsSizeB.z };
+        SdfShader.SetFloats("boundsSizeB", BoundsSizeB);
 
         int[] SizeA = { sizeA.x, sizeA.y, sizeA.z, sizeA.x * sizeA.y * sizeA.z };
         SdfShader.SetInts("SizeA", SizeA);

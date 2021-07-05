@@ -10,5 +10,5 @@ static class Constants
     public const float Lenght = 10f;
     public const float Width = 10f;
     public const float Height = 10f;
-    public const float Step = 0.02f;//0.1f--20  0.05f--40  0.04f--50  0.02f--100  0.01f--200
+    public const float Step = 0.01f;
 }
