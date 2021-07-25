@@ -73,9 +73,11 @@
     <Compile Include="Assets\Scripts\ObjSdfTable.cs" />
     <Compile Include="Assets\Scripts\SceneBox.cs" />
     <Compile Include="Assets\Scripts\SetScriptableObj.cs" />
+    <Compile Include="Assets\Scripts\SceneSDFArea.cs" />
     <Compile Include="Assets\Scripts\AttachScriptable.cs" />
     <Compile Include="Assets\Scripts\SceneSDF.cs" />
     <Compile Include="Assets\Scripts\MarchingCube\MarchingCubes.cs" />
+    <Compile Include="Assets\Scripts\SceneSDFAreaEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\SDF\50\0092-50.txt" />

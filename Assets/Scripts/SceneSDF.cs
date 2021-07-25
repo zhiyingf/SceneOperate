@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 //main scene
@@ -12,8 +13,6 @@ using UnityEngine;
 public class SceneSDF : MonoBehaviour
 {
     public SceneBox SB;
-    //ObjSdfTable objsdfA;
-    //ObjSdfTable objsdfB;
 
     public MeshFilter operationA;
     public MeshFilter operationB;
@@ -39,11 +38,6 @@ public class SceneSDF : MonoBehaviour
     private Vector3 scaleB;
 
     private List<Material> mats = new List<Material>();
-
-    
-
-    //BooleanCompute class
-    //private BooleanCompute sdfCompute;
 
     // Start is called before the first frame update
     void Start()
@@ -81,7 +75,7 @@ public class SceneSDF : MonoBehaviour
     /// </summary>
     public void Init()
     {
-        SB = new SceneBox();
+        SB = new SceneBox(SdfShader);
         if (operationA != null)
         {
             ObjAssign(operationA, ref nameA, ref positionA, ref rotationA, ref scaleA);
@@ -157,8 +151,8 @@ public class SceneSDF : MonoBehaviour
     {
         living = true;
         //Bounds operationBound = operationA.GetComponent<Renderer>().bounds;
-        while (operationA != null && operationB != null && SB.sceneBox.Intersects(operationA.GetComponent<Renderer>().bounds) && SB.sceneBox.Intersects(operationB.GetComponent<Renderer>().bounds))
-        {
+        while (operationA != null && operationB != null)
+        {// && SB.sceneBox.Intersects(operationA.GetComponent<Renderer>().bounds) && SB.sceneBox.Intersects(operationB.GetComponent<Renderer>().bounds)
             if (Changed())         
             {   
                 UpdateMesh();
@@ -181,28 +175,7 @@ public class SceneSDF : MonoBehaviour
         System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        //SB.UpdateSDF(operationA, objsdfA);
-        //NumToString(objsdf.Objsdf, "objsdf.txt");
-
-        //ManagerScriptableObject attachScr = operationA.GetComponent<AttachScriptable>().Scriptable;
-        //Texture3D texture3DA = attachScr.SDFTexture;
-        //Bounds boundsA = attachScr.Bounds;
-        //Vector3Int npointA = attachScr.Size;
-        //var objsdfA = texture3DA.GetPixelData<float>(0);
-        //print(objsdfA.Length);
-
-
-
-        SB.UpdateSDF(operationA, operationB, operationType, SdfShader);
-
-        ///
-        //Vector3Int Npoint = SB.ncells + Vector3Int.one;
-        //print("Npoint " + Npoint);
-        //print(SB.localBoxMin);
-        //print("testBen" + SB.testBen);
-        //print("testEnd" + SB.testEnd);
-        ///
-
+        SB.UpdateSDF(operationA, operationB, operationType);
 
         //MC 局部更新
         //UseMC mc = new UseMC(SB);
@@ -216,6 +189,9 @@ public class SceneSDF : MonoBehaviour
 
         if (McShader)
         {
+            //string srcName = "Assets/source/res/resSDF.asset";
+            //AssetDatabase.CreateAsset(SB.TexMatrix, srcName);
+
             UseMcShader mc = new UseMcShader(SB, McShader);
             mc.ComputeMC();
             GetComponent<MeshFilter>().mesh = mc.mesh;
@@ -228,111 +204,8 @@ public class SceneSDF : MonoBehaviour
 
         ///
 
-
-
-
         stopwatch.Stop();
         print("update timer: " + stopwatch.ElapsedMilliseconds);//ElapsedMilliseconds  ElapsedTicks时间刻度
 
-        //print(NumToString(SB.boxMatrix));
-        //NumToString(SB.boxMatrix, "boxMatrix.txt");
-        //print("operationType "+(int)operationType);
     }
-
-    //把每一个数取出来转化为字符串
-    public static void NumToString(float[,,] list, string fileName)
-    {
-        string str = "";
-        //foreach (float n in list)
-        //    str += n.ToString() + " ";
-        for(int i = 0; i <= 30; i++)
-        {
-            for(int j = 0;j <= 30; j++)
-            {
-                for(int k = 0;k <= 30; k++)
-                {
-                    str += list[i,j,k].ToString() + " ";
-                }
-            }
-        }
-
-        string pathout = "E:\\Users\\zhiyi\\SceneOperate\\"+fileName;
-
-        StreamWriter sw = new StreamWriter(pathout, true);
-        sw.WriteLine(str);
-        sw.Close();
-        sw.Dispose();
-        //return str;
-    }
-
-
-    /// <summary>
-    /// 从本地读取二进制文件至sdf float[]
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="sdf"></param>
-    public void ReadSDF(string name, float[] sdf)
-    {
-        name = "Assets\\SDF\\" + name + "-50.txt";
-        //print(System.IO.Directory.GetCurrentDirectory());
-        if (!File.Exists(name))
-        {
-            print(name + " not exist");
-            return;
-        }
-        
-        FileStream f = new FileStream(name, FileMode.Open,
-            FileAccess.Read, FileShare.Read);
-        // Create an instance of BinaryReader that can
-        // read bytes from the FileStream.
-        using (BinaryReader br = new BinaryReader(f))
-        {
-            int size = sizeof(float) * sdf.Length;
-            byte[] bb = new byte[size];
-            br.Read(bb, 0, size);
-
-            for(int i = 0, j = 0; i < size; i += 4,j++)
-            {
-                sdf[j] = BitConverter.ToSingle(bb, i);
-            }
-        }
-    }
-
-    public void ReadNormalSDF(string name, Vector3[] normalSDF)
-    {
-        name = "Assets\\SDF\\" + name + "NormalSDF50.txt";
-        //print(System.IO.Directory.GetCurrentDirectory());
-        if (!File.Exists(name))
-        {
-            print(name + " not exist");
-            return;
-        }
-
-        FileStream f = new FileStream(name, FileMode.Open,
-            FileAccess.Read, FileShare.Read);
-        // Create an instance of BinaryReader that can
-        // read bytes from the FileStream.
-        using (BinaryReader br = new BinaryReader(f))
-        {
-            int size = 3 * sizeof(float) * normalSDF.Length;
-            byte[] bb = new byte[size];
-            br.Read(bb, 0, size);
-
-            for (int i = 0, j = 0; i < size; i += 12, j++)
-            {
-                Vector3 v3;
-                v3.x = BitConverter.ToSingle(bb, i);
-                v3.y = BitConverter.ToSingle(bb, i+4);
-                v3.z = BitConverter.ToSingle(bb, i+8);
-                normalSDF[j] = v3;
-            }
-            
-        }
-    }
-
-
-
-
-
-
 }

@@ -23,8 +23,10 @@ public class UseMcShader
     {
         McShader = mcShader;
         Npoint = SB.ncells + Vector3Int.one;
-        McMin = SB.localBoxMin;
+        McMin = SB.localBox.min;
         Voxels = new Vector4[Npoint.x * Npoint.y * Npoint.z];
+
+        var tmp = SB.TexMatrix.GetPixelData<float>(0);
 
         for (int x = 0; x < Npoint.x; x++)
         {
@@ -35,14 +37,10 @@ public class UseMcShader
                     Vector3 coord = new Vector3(McMin.x + x * Constants.Step, McMin.y + y * Constants.Step, McMin.z + z * Constants.Step);
                     int idx = x + y * Npoint.x + z * Npoint.y * Npoint.x;
                     //int idx = z + y * Npoint.z + x * Npoint.y * Npoint.z;
-                    Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, SB.boxMatrix[x, y, z]);
+                    Voxels[idx] = new Vector4(coord.x, coord.y, coord.z, tmp[idx]);
                 }
             }
         }
-
-        //WriteSDF("bunnySDF.txt", Voxels);
-
-        //NumToString("bunnySDFstring.txt", Voxels);
     }
 
     public void ComputeMC()
@@ -140,52 +138,6 @@ public class UseMcShader
                 }
             }
         }
-    }
-
-
-    public void WriteSDF(string name, Vector4[] Voxels)
-    {
-        FileStream f = new FileStream(name, FileMode.Create);
-        BinaryWriter bw = new BinaryWriter(f);
-        int size = Voxels.Length;
-        for (int i = 0; i < size; i++)
-        {
-            //byte[] byArray = BitConverter.GetBytes(sdf[i]);
-            //bw.Write(byArray, 0, 4);
-            bw.Write(Voxels[i].x);
-            bw.Write(Voxels[i].y);
-            bw.Write(Voxels[i].z);
-            bw.Write(Voxels[i].w);
-        }
-
-        bw.Close();
-
-    }
-
-    public void NumToString(string name, Vector4[] Voxels)
-    {
-        string str = "";
-
-        int size = Voxels.Length;
-        for (int i = 0; i < size; i++)
-        {
-
-            str += Voxels[i].x.ToString() + " ";
-            str += Voxels[i].y.ToString() + " ";
-            str += Voxels[i].z.ToString() + " ";
-            str += Voxels[i].w.ToString() + " ";
-        }
-
-
-
-        //string pathout = "E:\\Users\\zhiyi\\SceneOperate\\" + name;
-
-        StreamWriter sw = new StreamWriter(name, true);
-        sw.WriteLine(str);
-        sw.Close();
-        sw.Dispose();
-
-        //return str;
     }
 
 }

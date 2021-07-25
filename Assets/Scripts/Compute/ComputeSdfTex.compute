@@ -9,6 +9,7 @@ SamplerState samplersdfA;
 
 Texture3D<float> sdfB;//
 SamplerState samplersdfB;
+
 SamplerState MyLinearClampSampler
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -18,6 +19,7 @@ SamplerState MyLinearClampSampler
 };
 
 RWStructuredBuffer<float> sdfRes;
+//RWTexture3D<float> sdfRes;
 
 float4x4 transMatrixA;//
 float4x4 transMatrixB;//
@@ -86,7 +88,6 @@ void CSMain (int3 id : SV_DispatchThreadID)
                 tempA = lerp(f1, f2, tDecimal.z);
             }*/
 
-
             ///////////
             //float3 tStep = (tA - boundsMinA) / (boundsMaxA - boundsMinA);
             float3 tStep = (tA - boundsMinA) / boundsSizeA;
@@ -124,12 +125,15 @@ void CSMain (int3 id : SV_DispatchThreadID)
     switch (type) {
     case 0:
         sdfRes[indexFromCoord(id.x, id.y, id.z)] = min(tempA, tempB);
+        //sdfRes[id] = min(tempA, tempB);
         break;
     case 1:
         sdfRes[indexFromCoord(id.x, id.y, id.z)] = max(tempA, tempB);
+        //sdfRes[id] = max(tempA, tempB);
         break;
     case 2:
         sdfRes[indexFromCoord(id.x, id.y, id.z)] = max(tempA, -tempB);
+        //sdfRes[id] = max(tempA, -tempB);
         break;
     }
 }
