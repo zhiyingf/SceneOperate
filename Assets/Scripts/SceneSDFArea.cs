@@ -206,11 +206,12 @@ public class SceneSDFArea : MonoBehaviour
         //Info = new List<OpAndType>();
         //Operations = new List<MeshFilter>();
 
-        int size = Operations.Count;
-        for(int i = 0; i < size; i++)
-        {
-            Info.Add(new OpAndType(Operations[i], BooleanType.Union));
-        }
+        //int size = Operations.Count;
+        //for(int i = 0; i < size; i++)
+        //{
+        //    Info.Add(new OpAndType(Operations[i], BooleanType.Union));
+        //}
+
     }
 
     public bool changed()
@@ -321,12 +322,11 @@ public class SceneSDFArea : MonoBehaviour
         }
     }
 
-    public bool isNull(List<MeshFilter> op)
+    public bool isNull(List<MeshFilter> ops)
     {
-        int size = op.Count;
-        for(int i = 0; i < size; i++)
+        foreach(MeshFilter op in ops)
         {
-            if (op[i] == null)
+            if (op == null)
             {
                 return false;
             }
