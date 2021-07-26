@@ -184,8 +184,8 @@ public class SceneSDFArea : MonoBehaviour
     public ComputeShader McShader;
     public ComputeShader SdfShader;
 
-    private List<OpAndType> Info;
-    public List<MeshFilter> Operations;
+    private List<OpAndType> Info = new List<OpAndType>();
+    public List<MeshFilter> Operations = new List<MeshFilter>();
 
     //A lock that controls the execution of a program
     public bool living = false;
@@ -194,7 +194,7 @@ public class SceneSDFArea : MonoBehaviour
     private List<Material> mats = new List<Material>();
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         living = false;
         Init();
@@ -203,8 +203,9 @@ public class SceneSDFArea : MonoBehaviour
     public void Init()
     {
         SB = new SceneBox(SdfShader);
-        Info = new List<OpAndType>();
-        Operations = new List<MeshFilter>();
+        //Info = new List<OpAndType>();
+        //Operations = new List<MeshFilter>();
+
         int size = Operations.Count;
         for(int i = 0; i < size; i++)
         {
@@ -217,19 +218,23 @@ public class SceneSDFArea : MonoBehaviour
         bool flag = false;
         int size = Operations.Count;
 
-        for (int i = 0; i < size; i++)
+        if (isNull(Operations))
         {
-            Transform tran = Operations[i].transform;
-            OpState state = Info[i].state;
-            if (state.changed(tran))
+            for (int i = 0; i < size; i++)
             {
-                flag = true;
+                Transform tran = Operations[i].transform;
+                OpState state = Info[i].state;
+                if (state.changed(tran))
+                {
+                    flag = true;
 
-                OpAndType tmp = Info[i];
-                tmp.state = new OpState(tran);
-                Info[i] = tmp;
+                    OpAndType tmp = Info[i];
+                    tmp.state = new OpState(tran);
+                    Info[i] = tmp;
+                }
             }
         }
+        
         return flag;
     }
 
@@ -237,7 +242,7 @@ public class SceneSDFArea : MonoBehaviour
     void Update()
     {
         int size = Operations.Count;
-        if (size > Info.Count && Operations[size-1]!=null)
+        if (size > Info.Count && isNull(Operations))
         {
             for (int i = 0; i < size; i++)
             {
@@ -253,8 +258,10 @@ public class SceneSDFArea : MonoBehaviour
 
     public void ExecuteOnClick()
     {
-        UpdateSDF();
-        UpdateMesh();
+        if (UpdateSDF())
+        {
+            UpdateMesh();
+        }
     }
 
     private IEnumerator Execute()
@@ -262,9 +269,8 @@ public class SceneSDFArea : MonoBehaviour
         living = true;
         while (Operations.Count > 0)
         {
-            if (changed())
+            if (changed()&&UpdateSDF())
             {
-                UpdateSDF();
                 UpdateMesh();
             }
             else
@@ -277,37 +283,30 @@ public class SceneSDFArea : MonoBehaviour
         yield break;
     }
 
-    public void UpdateSDF()
+    public bool UpdateSDF()
     {
         int size = Operations.Count;
         
-        if (size >= 2)
+        if (size >= 2 && isNull(Operations))
         {
             SB.UpdateSDF(Operations[0], Operations[1], Info[1].type);
 
             //string srcName = "Assets/source/res/resBegin.asset";
             //AssetDatabase.CreateAsset(SB.TexMatrix, srcName);
 
-            Debug.Log(SB.localBox);
-
             for (int i = 2; i < size; i++)
             {
-                //string srcName1 = "Assets/source/res/res1.asset";
-                //AssetDatabase.CreateAsset(SB.TexMatrix, srcName1);
-
                 SB.UpdateSDFLater(Operations[i], Info[i].type);
             }
-        } 
-
-
+            return true;
+        }
+        return false;
     }
 
     public void UpdateMesh()
     {
-        if (McShader && Operations.Count>=2)
+        if (McShader)
         {
-            Debug.Log("UpdateMesh");
-
             mats.Clear();
             mats.AddRange(Operations[0].GetComponent<Renderer>().sharedMaterials);
 
@@ -320,6 +319,19 @@ public class SceneSDFArea : MonoBehaviour
         {
             print("need compute shader");
         }
+    }
+
+    public bool isNull(List<MeshFilter> op)
+    {
+        int size = op.Count;
+        for(int i = 0; i < size; i++)
+        {
+            if (op[i] == null)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public struct OpAndType
