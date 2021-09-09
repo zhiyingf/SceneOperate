@@ -55,7 +55,7 @@ public class ObjSdfTable
         }
     }
 
-    public void ComputeBoxSdf(Vector3 b)
+    public void ComputeBoxSdf(Vector3 b)//length,width,height,
     {
         Vector3 origin = -b/2;
         for (int i = 0; i <= Ncells.x; i++)
@@ -80,4 +80,11 @@ public class ObjSdfTable
             }
         }
     }
+
+    //Torus
+    public void ComputeToruSdf()
+    {
+
+    }
+
 }
